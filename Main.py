@@ -12,6 +12,8 @@ class MainWindow(window.Window):
 
 	def __init__(self, width, height, imageName, name):
 		window.Window.__init__(self, width, height, name)
+		self.width = width
+		self.height = height
 		self.voronoiImage = VoronoiImage.VoronoiImage(imageName)
 		self.nodeIndex = 0
 		self.edgeIndex = 0
@@ -19,16 +21,29 @@ class MainWindow(window.Window):
 		self.nodeIndex = (self.nodeIndex + 1)
 		node2 = Node.Node(400, 400, self.nodeIndex)
 		self.nodeIndex = (self.nodeIndex + 1)
-		edge1 = Edge.Edge(node1, node2, self.edgeIndex)
-		self.edgeIndex = (self.edgeIndex + 1)
+		node3 = Node.Node(500, 200, self.nodeIndex)
+		self.nodeIndex = (self.nodeIndex + 1)
 
 		# mannually adding nodes and edges to a list. This will be automated later when the user clicks
 		self.nodes = []
 		self.nodes.append(node1)
 		self.nodes.append(node2)
+		self.nodes.append(node3)
 
 		self.edges = []
-		self.edges.append(edge1)
+
+
+
+	def gift_wrapping(self):
+		print("find convex hull using gift wrapping algorithm")
+		# We are going to find the left most node in the set, this node will always be in the convex hull.
+		minX = self.width
+		leftNode = ""
+		for n in self.nodes:
+			if n.getX() < minX:
+				leftNode = n
+				minX = n.getX()
+		print(leftNode.getX())
 
 
 	def main_loop(self):
@@ -84,6 +99,7 @@ class MainWindow(window.Window):
 		nodeNew = Node.Node(x, y, self.nodeIndex)
 		self.nodeIndex = (self.nodeIndex + 1)
 		self.nodes.append(nodeNew)
+		self.gift_wrapping()
 
 
 if __name__ == "__main__":
