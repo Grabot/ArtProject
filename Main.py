@@ -13,21 +13,27 @@ class MainWindow(window.Window):
 	def __init__(self, width, height, imageName, name):
 		window.Window.__init__(self, width, height, name)
 		self.voronoiImage = VoronoiImage.VoronoiImage(imageName)
-		self.node1 = Node.Node("node1", 300, 300)
-		self.node2 = Node.Node("node2", 400, 400)
-		self.edge1 = Edge.Edge("edge1", self.node1, self.node2)
+		self.nodeIndex = 0
+		self.edgeIndex = 0
+		node1 = Node.Node(300, 300, self.nodeIndex)
+		self.nodeIndex = (self.nodeIndex + 1)
+		node2 = Node.Node(400, 400, self.nodeIndex)
+		self.nodeIndex = (self.nodeIndex + 1)
+		edge1 = Edge.Edge(node1, node2, self.edgeIndex)
+		self.edgeIndex = (self.edgeIndex + 1)
 
 		# mannually adding nodes and edges to a list. This will be automated later when the user clicks
 		self.nodes = []
-		self.nodes.append(self.node1)
-		self.nodes.append(self.node2)
+		self.nodes.append(node1)
+		self.nodes.append(node2)
 
 		self.edges = []
-		self.edges.append(self.edge1)
+		self.edges.append(edge1)
 
 
 	def main_loop(self):
 		clock.set_fps_limit(30)
+		nodeSize = 5
 
 		while not self.has_exit:
 			self.dispatch_events()
@@ -42,7 +48,12 @@ class MainWindow(window.Window):
 			for n in self.nodes:
 				nodeX = n.getX()
 				nodeY = n.getY()
-				pyglet.graphics.draw(4, GL_QUADS, ('v2f', [nodeX-5,nodeY-5, nodeX-5,nodeY+5, nodeX+5,nodeY+5, nodeX+5,nodeY-5]))
+				pyglet.graphics.draw(4, GL_QUADS, ('v2f', [
+															nodeX-nodeSize,nodeY-nodeSize, 
+															nodeX-nodeSize,nodeY+nodeSize, 
+															nodeX+nodeSize,nodeY+nodeSize, 
+															nodeX+nodeSize,nodeY-nodeSize
+															]))
 			# draw the edges
 			for e in self.edges:
 				nodeFrom = e.getNodeFrom()
@@ -70,7 +81,9 @@ class MainWindow(window.Window):
 		pass
 
 	def on_mouse_release(self, x, y, button, modifiers):
-		pass
+		nodeNew = Node.Node(x, y, self.nodeIndex)
+		self.nodeIndex = (self.nodeIndex + 1)
+		self.nodes.append(nodeNew)
 
 
 if __name__ == "__main__":

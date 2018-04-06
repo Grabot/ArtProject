@@ -1,13 +1,10 @@
 
 class Node():
 
-	def __init__(self, name, x, y):
-		self.name = name
+	def __init__(self, x, y, nodeIndex):
 		self.x = x
 		self.y = y
-
-	def getName(self):
-		return self.name
+		self.nodeIndex = nodeIndex
 
 	def setX(self, x):
 		self.x = x
@@ -20,4 +17,7 @@ class Node():
 		
 	def getY(self):
 		return self.y
+
+	def getNodeIndex():
+		return self.nodeIndex
 		
