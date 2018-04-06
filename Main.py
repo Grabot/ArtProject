@@ -1,17 +1,16 @@
 import os
 from pyglet import window
 from pyglet import clock
-from pyglet import image
 from pyglet.gl import *
 from PIL import Image
+import VoronoiImage as VoronoiImage
 
 
 class MainWindow(window.Window):
 
 	def __init__(self, width, height, imageName, name):
 		window.Window.__init__(self, width, height, name)
-		self.set_mouse_visible(False)
-		self.voronoiImage = VoronoiImage(imageName)
+		self.voronoiImage = VoronoiImage.VoronoiImage(imageName)
 
 	def main_loop(self):
 		clock.set_fps_limit(30)
@@ -37,30 +36,29 @@ class MainWindow(window.Window):
 			clock.tick()
 			self.flip()
 
-
 	def draw(self):
 		self.voronoiImage.draw()
 
+	# Event handlers
+	def on_mouse_motion(self, x, y, dx, dy):
+		print("motion")
 
-class VoronoiImage():
+	def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+		print("drag race")
 
-	def __init__(self, imageName):
-		directory = os.path.abspath(os.path.dirname(__file__))
-		directory = os.path.join(directory, 'data')
-		full_path = os.path.join(directory, imageName)
-		self.image = image.load(full_path)
-		self.x = 0
-		self.y = 0
+	def on_mouse_press(self, x, y, button, modifiers):
+		print("press")
 
-	def draw(self):
-		self.image.blit(self.x, self.y)
+	def on_mouse_release(self, x, y, button, modifiers):
+		print("release")
 
 
 if __name__ == "__main__":
 	imageName = "Oudegracht_Utrecht_2.png"
-	directory = os.path.abspath(os.path.dirname(__file__))
-	directory = os.path.join(directory, 'data')
-	im = Image.open(directory + "\\" + imageName)
+	imagePath = os.path.abspath(os.path.dirname(__file__))
+	imagePath = os.path.join(imagePath, 'data')
+	imagePath = os.path.join(imagePath, imageName)
+	im = Image.open(imagePath)
 	(width, height) = im.size
 
 	window = MainWindow(width, height, imageName, "Voronoi art project")
