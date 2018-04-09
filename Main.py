@@ -1,4 +1,6 @@
 import os
+import math
+from math import sqrt
 from pyglet import window
 from pyglet import clock
 from pyglet.gl import *
@@ -30,17 +32,56 @@ class MainWindow(window.Window):
         self.nodes.append(node3)
 
         self.edges = []
+        self.convexHullEdges = []
+
+
+    def orientation(self, p1, p2, p3):
+    	orientation = (p2.getX() - p1.getX()) * (p3.getY() - p1.getY()) - (p3.getX() - p1.getX()) * (p2.getY() - p1.getY());
+    	return orientation
+
 
     def gift_wrapping(self):
-        print("find convex hull using gift wrapping algorithm")
         # We are going to find the left most node in the set, this node will always be in the convex hull.
+        if len(self.nodes) < 3:
+        	print("not enough nodes for a convex hull calculation")
+        	return
+
+        finalPoints = []
         minX = self.width
-        leftNode = ""
+        hullPoint = ""
         for n in self.nodes:
             if n.getX() < minX:
-                leftNode = n
+                hullPoint = n
                 minX = n.getX()
-        print(leftNode.getX())
+
+        remainingNodes = self.nodes.copy()
+
+        endPoint = ""
+        finalPoints = []
+        while finalPoints == [] or endPoint != finalPoints[0]:
+        	finalPoints.append(hullPoint)
+        	endPoint = remainingNodes[0]
+
+	        for index in range(1, len(remainingNodes)):
+	        	# We want to find the angle between the last found point (finalPoints[-1]), the currently selected endPoint and the node we're looping over.
+	        	# If the angle is better between the last found point and the current point we're checking (n) we will put the endPoint on that node.
+	        	if hullPoint == endPoint or self.orientation(finalPoints[-1], endPoint, remainingNodes[index]) > 0:
+	        		# The orientation is on the leftside.
+	        		endPoint = remainingNodes[index]
+
+	        hullPoint = endPoint
+
+	    # set the edges for the convex hull
+        self.convexHullEdges = []
+        for x in range(0, len(finalPoints)):
+        	edge = ""
+        	if x == len(finalPoints)-1:
+        		edge = Edge.Edge(finalPoints[x], finalPoints[0])
+        	else:
+        		edge = Edge.Edge(finalPoints[x], finalPoints[x+1])
+
+        	self.convexHullEdges.append(edge)
+
 
     def main_loop(self):
         clock.set_fps_limit(30)
@@ -66,7 +107,7 @@ class MainWindow(window.Window):
                     nodeX + nodeSize, nodeY - nodeSize
                 ]))
             # draw the edges
-            for e in self.edges:
+            for e in self.convexHullEdges:
                 nodeFrom = e.getNodeFrom()
                 nodeTo = e.getNodeTo()
                 pyglet.graphics.draw(4, GL_LINES, (

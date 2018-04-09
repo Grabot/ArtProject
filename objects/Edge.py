@@ -1,8 +1,7 @@
 class Edge():
-    def __init__(self, nodeFrom, nodeTo, edgeIndex):
+    def __init__(self, nodeFrom, nodeTo):
         self.nodeFrom = nodeFrom
         self.nodeTo = nodeTo
-        self.edgeIndex = edgeIndex
 
     def setNodeFrom(self, nodeFrom):
         self.nodeFrom = nodeFrom
@@ -15,6 +14,3 @@ class Edge():
 
     def getNodeTo(self):
         return self.nodeTo
-
-    def getEdgeIndeX(self):
-        return self.getEdgeIndeX
