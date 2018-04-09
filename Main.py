@@ -16,21 +16,9 @@ class MainWindow(window.Window):
         self.width = width
         self.height = height
         self.voronoiImage = VoronoiImage.VoronoiImage(imageName)
-        self.nodeIndex = 0
-        self.edgeIndex = 0
-        node1 = Node.Node(300, 300, self.nodeIndex)
-        self.nodeIndex = (self.nodeIndex + 1)
-        node2 = Node.Node(400, 400, self.nodeIndex)
-        self.nodeIndex = (self.nodeIndex + 1)
-        node3 = Node.Node(500, 200, self.nodeIndex)
-        self.nodeIndex = (self.nodeIndex + 1)
 
-        # mannually adding nodes and edges to a list. This will be automated later when the user clicks
+        # Mannually adding nodes and edges to a list. This will be automated later when the user clicks
         self.nodes = []
-        self.nodes.append(node1)
-        self.nodes.append(node2)
-        self.nodes.append(node3)
-
         self.edges = []
         self.convexHullEdges = []
 
@@ -41,12 +29,11 @@ class MainWindow(window.Window):
 
 
     def gift_wrapping(self):
-        # We are going to find the left most node in the set, this node will always be in the convex hull.
         if len(self.nodes) < 3:
-        	print("not enough nodes for a convex hull calculation")
+        	# Not enough nodes for a convex hull calculation
         	return
 
-        finalPoints = []
+        # We are going to find the left most node in the set, this node will always be in the convex hull.
         minX = self.width
         hullPoint = ""
         for n in self.nodes:
@@ -54,24 +41,22 @@ class MainWindow(window.Window):
                 hullPoint = n
                 minX = n.getX()
 
-        remainingNodes = self.nodes.copy()
-
         endPoint = ""
         finalPoints = []
         while finalPoints == [] or endPoint != finalPoints[0]:
         	finalPoints.append(hullPoint)
-        	endPoint = remainingNodes[0]
+        	endPoint = self.nodes[0]
 
-	        for index in range(1, len(remainingNodes)):
+	        for index in range(1, len(self.nodes)):
 	        	# We want to find the angle between the last found point (finalPoints[-1]), the currently selected endPoint and the node we're looping over.
 	        	# If the angle is better between the last found point and the current point we're checking (n) we will put the endPoint on that node.
-	        	if hullPoint == endPoint or self.orientation(finalPoints[-1], endPoint, remainingNodes[index]) > 0:
+	        	if hullPoint == endPoint or self.orientation(finalPoints[-1], endPoint, self.nodes[index]) > 0:
 	        		# The orientation is on the leftside.
-	        		endPoint = remainingNodes[index]
+	        		endPoint = self.nodes[index]
 
 	        hullPoint = endPoint
 
-	    # set the edges for the convex hull
+	    # Set the edges for the convex hull
         self.convexHullEdges = []
         for x in range(0, len(finalPoints)):
         	edge = ""
@@ -95,7 +80,7 @@ class MainWindow(window.Window):
 
             gl.glEnable(gl.GL_BLEND)
             gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-            # draw the nodes with how you can give it a colour
+            # Draw the nodes with how you can give it a colour
             glColor4f(1, 0, 0, 1.0)
             for n in self.nodes:
                 nodeX = n.getX()
@@ -112,9 +97,9 @@ class MainWindow(window.Window):
                 nodeTo = e.getNodeTo()
                 pyglet.graphics.draw(4, GL_LINES, (
                 'v2f', (0, 0, 0, height, nodeFrom.getX(), nodeFrom.getY(), nodeTo.getX(), nodeTo.getY())))
-            # draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
+            # Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
             # pyglet.graphics.draw(8, GL_POLYGON, ('v2f', [300,300, 300,400, 400,500, 500,500, 600,400, 600,300, 500,200, 400,200]))
-            # white, so reset the colour
+            # White, so reset the colour
             glColor4f(1, 1, 1, 1)
 
             clock.tick()
@@ -134,8 +119,7 @@ class MainWindow(window.Window):
         pass
 
     def on_mouse_release(self, x, y, button, modifiers):
-        nodeNew = Node.Node(x, y, self.nodeIndex)
-        self.nodeIndex = (self.nodeIndex + 1)
+        nodeNew = Node.Node(x, y)
         self.nodes.append(nodeNew)
         self.gift_wrapping()
 
