@@ -8,6 +8,7 @@ from PIL import Image
 import VoronoiImage as VoronoiImage
 import objects.Node as Node
 import objects.Edge as Edge
+import objects.Graph as Graph
 
 
 class MainWindow(window.Window):
@@ -21,50 +22,17 @@ class MainWindow(window.Window):
         self.nodes = []
         self.edges = []
         self.convexHullEdges = []
+        # The graph doesn't have any nodes or edges yet.
+        self.graph = Graph.Graph()
 
-    def orientation(self, p1, p2, p3):
-        orientation = (p2.getX() - p1.getX()) * (p3.getY() - p1.getY()) - (p3.getX() - p1.getX()) * (
-        p2.getY() - p1.getY());
-        return orientation
 
-    def gift_wrapping(self):
+    def bubble_sort(self):
         if len(self.nodes) < 3:
             # Not enough nodes for a convex hull calculation
             return
+        print("sorting on x")
 
-        # We are going to find the left most node in the set, this node will always be in the convex hull.
-        minX = self.width
-        hullPoint = ""
-        for n in self.nodes:
-            if n.getX() < minX:
-                hullPoint = n
-                minX = n.getX()
 
-        endPoint = ""
-        finalPoints = []
-        while finalPoints == [] or endPoint != finalPoints[0]:
-            finalPoints.append(hullPoint)
-            endPoint = self.nodes[0]
-
-            for index in range(1, len(self.nodes)):
-                # We want to find the angle between the last found point (finalPoints[-1]), the currently selected endPoint and the node we're looping over.
-                # If the angle is better between the last found point and the current point we're checking (n) we will put the endPoint on that node.
-                if hullPoint == endPoint or self.orientation(finalPoints[-1], endPoint, self.nodes[index]) > 0:
-                    # The orientation is on the leftside.
-                    endPoint = self.nodes[index]
-
-            hullPoint = endPoint
-
-            # Set the edges for the convex hull
-        self.convexHullEdges = []
-        for x in range(0, len(finalPoints)):
-            edge = ""
-            if x == len(finalPoints) - 1:
-                edge = Edge.Edge(finalPoints[x], finalPoints[0])
-            else:
-                edge = Edge.Edge(finalPoints[x], finalPoints[x + 1])
-
-            self.convexHullEdges.append(edge)
 
     def main_loop(self):
         clock.set_fps_limit(30)
@@ -80,7 +48,7 @@ class MainWindow(window.Window):
             gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
             # Draw the nodes with how you can give it a colour
             glColor4f(1, 0, 0, 1.0)
-            for n in self.nodes:
+            for n in self.graph.getNodes():
                 nodeX = n.getX()
                 nodeY = n.getY()
                 pyglet.graphics.draw(4, GL_QUADS, ('v2f', [
@@ -90,7 +58,7 @@ class MainWindow(window.Window):
                     nodeX + nodeSize, nodeY - nodeSize
                 ]))
             # draw the edges
-            for e in self.convexHullEdges:
+            for e in self.graph.getConvexHullEdges():
                 nodeFrom = e.getNodeFrom()
                 nodeTo = e.getNodeTo()
                 pyglet.graphics.draw(4, GL_LINES, (
@@ -118,8 +86,8 @@ class MainWindow(window.Window):
 
     def on_mouse_release(self, x, y, button, modifiers):
         nodeNew = Node.Node(x, y)
-        self.nodes.append(nodeNew)
-        self.gift_wrapping()
+        self.graph.addNode(nodeNew)
+        self.graph.gift_wrapping()
 
 
 if __name__ == "__main__":
