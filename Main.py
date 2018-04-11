@@ -8,6 +8,7 @@ from PIL import Image
 import VoronoiImage as VoronoiImage
 import objects.Node as Node
 import objects.Edge as Edge
+import objects.Face as Face
 import objects.Graph as Graph
 
 
@@ -18,20 +19,21 @@ class MainWindow(window.Window):
         self.height = height
         self.voronoiImage = VoronoiImage.VoronoiImage(imageName)
 
-        # Mannually adding nodes and edges to a list. This will be automated later when the user clicks
-        self.nodes = []
-        self.edges = []
-        self.convexHullEdges = []
+        # Mannually add 4 nodes with triangulation edges far outside the sight to make it easy to make the delaunay and voronoi calculations.
+        nodes = []
+        nodes.append(Node.Node(-99999999, -99999999))
+        nodes.append(Node.Node(99999999, -99999999))
+        nodes.append(Node.Node(0, 99999999))
+
+        edges = []
+        edges.append(Edge.Edge(nodes[0], nodes[1]))
+        edges.append(Edge.Edge(nodes[1], nodes[2]))
+        edges.append(Edge.Edge(nodes[2], nodes[0]))
+
+        faces = []
+        faces.append(Face.Face(nodes[0], nodes[1], nodes[2]))
+        self.graph = Graph.Graph(nodes, edges, faces)
         # The graph doesn't have any nodes or edges yet.
-        self.graph = Graph.Graph()
-
-
-    def bubble_sort(self):
-        if len(self.nodes) < 3:
-            # Not enough nodes for a convex hull calculation
-            return
-        print("sorting on x")
-
 
 
     def main_loop(self):
@@ -58,7 +60,8 @@ class MainWindow(window.Window):
                     nodeX + nodeSize, nodeY - nodeSize
                 ]))
             # draw the edges
-            for e in self.graph.getConvexHullEdges():
+            glColor4f(0, 1, 0, 1.0)
+            for e in self.graph.getEdges():
                 nodeFrom = e.getNodeFrom()
                 nodeTo = e.getNodeTo()
                 pyglet.graphics.draw(4, GL_LINES, (
@@ -87,7 +90,6 @@ class MainWindow(window.Window):
     def on_mouse_release(self, x, y, button, modifiers):
         nodeNew = Node.Node(x, y)
         self.graph.addNode(nodeNew)
-        self.graph.gift_wrapping()
 
 
 if __name__ == "__main__":

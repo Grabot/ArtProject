@@ -2,9 +2,11 @@ import objects.Node as Node
 import objects.Edge as Edge
 
 class Graph():
-    def __init__(self, nodes = [], edges = []):
+    def __init__(self, nodes = [], edges = [], faces = []):
     	self.nodes = nodes
     	self.edges = edges
+    	self.faces = faces
+    	# Now we won't use it anymore, but it is nice that it works and it is nice to have.
     	self.convexHullEdges = []
 
     def setNodes(self, nodes):
@@ -18,6 +20,12 @@ class Graph():
 
     def getEdges(self):
         return self.edges
+
+    def setFaces(self, faces):
+    	self.faces = faces
+
+    def getFaces(self):
+        return self.faces
 
     def addNode(self, node):
     	self.nodes.append(node)
