@@ -40,6 +40,27 @@ class MainWindow(window.Window):
 		halfEdge8 = HalfEdge.HalfEdge(node1, face3)
 		halfEdge9 = HalfEdge.HalfEdge(node4, face3)
 
+		halfEdge1.setAdjacentEdge(halfEdge9)
+		halfEdge1.setNextEdge(halfEdge2)
+		# It is possible that there isn't a adjacent Edge. This is the case for the outer edges.
+		halfEdge2.setNextEdge(halfEdge3)
+		halfEdge3.setAdjacentEdge(halfEdge4)
+		halfEdge3.setNextEdge(halfEdge1)
+		halfEdge4.setAdjacentEdge(halfEdge3)
+		halfEdge4.setNextEdge(halfEdge5)
+		halfEdge5.setNextEdge(halfEdge6)
+		halfEdge6.setAdjacentEdge(halfEdge7)
+		halfEdge6.setNextEdge(halfEdge4)
+		halfEdge7.setAdjacentEdge(halfEdge8)
+		halfEdge7.setNextEdge(halfEdge6)
+		halfEdge8.setNextEdge(halfEdge9)
+		halfEdge9.setAdjacentEdge(halfEdge1)
+		halfEdge9.setNextEdge(halfEdge7)
+
+		face1.setEdge(halfEdge1)
+		face2.setEdge(halfEdge4)
+		face3.setEdge(halfEdge7)
+
 		nodes = []
 		nodes.append(node1)
 		nodes.append(node2)
@@ -59,23 +80,6 @@ class MainWindow(window.Window):
 		halfEdges.append(halfEdge7)
 		halfEdges.append(halfEdge8)
 		halfEdges.append(halfEdge9)
-
-		halfEdge1.setAdjacentEdge(halfEdge9)
-		halfEdge1.setNextEdge(halfEdge2)
-		# It is possible that there isn't a adjacent Edge. This is the case for the outer edges.
-		halfEdge2.setNextEdge(halfEdge3)
-		halfEdge3.setAdjacentEdge(halfEdge4)
-		halfEdge3.setNextEdge(halfEdge1)
-		halfEdge4.setAdjacentEdge(halfEdge3)
-		halfEdge4.setNextEdge(halfEdge5)
-		halfEdge5.setNextEdge(halfEdge6)
-		halfEdge6.setAdjacentEdge(halfEdge7)
-		halfEdge6.setNextEdge(halfEdge4)
-		halfEdge7.setAdjacentEdge(halfEdge8)
-		halfEdge7.setNextEdge(halfEdge6)
-		halfEdge8.setNextEdge(halfEdge9)
-		halfEdge9.setAdjacentEdge(halfEdge1)
-		halfEdge9.setNextEdge(halfEdge7)
 		self.graph = Graph.Graph(nodes, halfEdges, faces)
 		# The graph doesn't have any nodes or edges yet.
 

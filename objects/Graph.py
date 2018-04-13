@@ -44,9 +44,22 @@ class Graph():
 		# We have added a node, so we want to find out which face it is in and connect it with edges
 		for f in self.faces:
 			if self.inFace(f.getNode1(), f.getNode2(), f.getNode3(), node):
-				self.edges.append(Edge.Edge(node, f.getNode1()))
-				self.edges.append(Edge.Edge(node, f.getNode2()))
-				self.edges.append(Edge.Edge(node, f.getNode3()))
+				# The 3 edges of the face that is chosen.
+				edge1 = f.getEdge()
+				edge2 = edge1.getNextEdge()
+				edge3 = edge2.getNextEdge()
+				# Create 3 new edges. and we need to fix the other half edges to get the correct "next edge"
+				edge1_1 = HalfEdge.HalfEdge(f.getNode1())
+				edge1_2 = HalfEdge.HalfEdge(node)
+
+				edge2_1 = HalfEdge.HalfEdge(f.getNode2())
+				edge2_2 = HalfEdge.HalfEdge(node)
+
+				edge3_1 = HalfEdge.HalfEdge(f.getNode3())
+				edge3_2 = HalfEdge.HalfEdge(node)
+				# self.edges.append(Edge.Edge(node, f.getNode1()))
+				# self.edges.append(Edge.Edge(node, f.getNode2()))
+				# self.edges.append(Edge.Edge(node, f.getNode3()))
 
 				# We will add the 3 newly created faces.
 				self.faces.append(Face.Face(node, f.getNode1(), f.getNode2()))
