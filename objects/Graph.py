@@ -48,23 +48,61 @@ class Graph():
 				edge1 = f.getEdge()
 				edge2 = edge1.getNextEdge()
 				edge3 = edge2.getNextEdge()
+
 				# Create 3 new edges. and we need to fix the other half edges to get the correct "next edge"
-				edge1_1 = HalfEdge.HalfEdge(f.getNode1())
-				edge1_2 = HalfEdge.HalfEdge(node)
+				edge1_1 = HalfEdge.HalfEdge(node)
+				edge1_2 = HalfEdge.HalfEdge(f.getNode1())
 
-				edge2_1 = HalfEdge.HalfEdge(f.getNode2())
-				edge2_2 = HalfEdge.HalfEdge(node)
+				edge2_1 = HalfEdge.HalfEdge(node)
+				edge2_2 = HalfEdge.HalfEdge(f.getNode2())
 
-				edge3_1 = HalfEdge.HalfEdge(f.getNode3())
-				edge3_2 = HalfEdge.HalfEdge(node)
-				# self.edges.append(Edge.Edge(node, f.getNode1()))
-				# self.edges.append(Edge.Edge(node, f.getNode2()))
-				# self.edges.append(Edge.Edge(node, f.getNode3()))
+				edge3_1 = HalfEdge.HalfEdge(node)
+				edge3_2 = HalfEdge.HalfEdge(f.getNode3())
 
-				# We will add the 3 newly created faces.
-				self.faces.append(Face.Face(node, f.getNode1(), f.getNode2()))
-				self.faces.append(Face.Face(node, f.getNode2(), f.getNode3()))
-				self.faces.append(Face.Face(node, f.getNode3(), f.getNode1()))
+				# Set the new and correct "next edge" for all new half edges and the 3 half edges of the face.
+				edge1.setNextEdge(edge1_1)
+				edge1_1.setNextEdge(edge3_2)
+				edge3_2.setNextEdge(edge1)
+
+				edge2.setNextEdge(edge2_1)
+				edge2_1.setNextEdge(edge1_2)
+				edge1_2.setNextEdge(edge2)
+
+				edge3.setNextEdge(edge3_1)
+				edge3_1.setNextEdge(edge2_2)
+				edge2_2.setNextEdge(edge3)
+
+				# Set the new and correct adjacent edges. These stay the same for the original 3 face edges, but should be set for the newly created edges.
+				edge1_1.setAdjacentEdge(edge1_2)
+				edge1_2.setAdjacentEdge(edge1_1)
+				edge2_1.setAdjacentEdge(edge2_2)
+				edge2_2.setAdjacentEdge(edge2_1)
+				edge3_1.setAdjacentEdge(edge3_2)
+				edge3_2.setAdjacentEdge(edge3_1)
+
+				# We will add the 3 newly created faces. with a half edge for each face. and set the faces on the half edges
+				face1 = Face.Face(node, f.getNode1(), f.getNode2(), edge1_1)
+				face2 = Face.Face(node, f.getNode2(), f.getNode3(), edge2_1)
+				face3 = Face.Face(node, f.getNode3(), f.getNode1(), edge3_1)
+
+				edge1_1.setFace(face1)
+				edge1_2.setFace(face2)
+				edge2_1.setFace(face2)
+				edge2_2.setFace(face3)
+				edge3_1.setFace(face3)
+				edge3_2.setFace(face1)
+
+				self.faces.append(face1)
+				self.faces.append(face2)
+				self.faces.append(face3)
+
+				# We don't have to remove edges, only add the newly created ones.
+				self.edges.append(edge1_1)
+				self.edges.append(edge1_2)
+				self.edges.append(edge2_1)
+				self.edges.append(edge2_2)
+				self.edges.append(edge3_1)
+				self.edges.append(edge3_2)
 
 				# The original face is now replaced with 3 new ones, so we will remove the original
 				self.faces.remove(f)

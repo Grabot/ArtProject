@@ -1,6 +1,6 @@
 
 class HalfEdge():
-	def __init__(self, node, face, adjacentEdge = None, nextEdge = None):
+	def __init__(self, node, face=None, adjacentEdge = None, nextEdge = None):
 		self.node = node 					# vertex at the end of the half-edge
 		self.face = face 					# face the half-edge borders
 		self.adjacentEdge = adjacentEdge 	# oppositely oriented adjacent half-edge 
