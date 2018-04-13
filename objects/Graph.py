@@ -1,5 +1,6 @@
 import objects.Node as Node
 import objects.Edge as Edge
+import objects.HalfEdge as HalfEdge
 import objects.Face as Face
 
 class Graph():
@@ -27,6 +28,9 @@ class Graph():
 
 	def getFaces(self):
 		return self.faces
+
+	def validEdge(self):
+		print("test edge")
 
 	def inFace(self, p0, p1, p2, node):
 		Area = 0.5 *(-p1.getY()*p2.getX() + p0.getY()*(-p1.getX() + p2.getX()) + p0.getX()*(p1.getY() - p2.getY()) + p1.getX()*p2.getY())
