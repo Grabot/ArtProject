@@ -15,6 +15,7 @@ import objects.Graph as Graph
 class MainWindow(window.Window):
 	def __init__(self, width, height, imageName, name):
 		window.Window.__init__(self, width, height, name)
+		self.showEdge = False
 		self.width = width
 		self.height = height
 		self.voronoiImage = VoronoiImage.VoronoiImage(imageName)
@@ -83,6 +84,9 @@ class MainWindow(window.Window):
 		self.graph = Graph.Graph(nodes, halfEdges, faces)
 		# The graph doesn't have any nodes or edges yet.
 
+		# We will select a sorta random edge that is not on the outside.
+		self.theEdgeToShow = halfEdges[3]
+
 
 	def main_loop(self):
 		clock.set_fps_limit(30)
@@ -94,6 +98,7 @@ class MainWindow(window.Window):
 
 			# White, so reset the colour
 			glColor4f(1, 1, 1, 1)
+			gl.glLineWidth(1)
 			self.draw()
 
 			gl.glEnable(gl.GL_BLEND)
@@ -120,6 +125,23 @@ class MainWindow(window.Window):
 					pyglet.graphics.draw(4, GL_LINES, (
 						'v2f', (0, 0, 0, height, nodeFrom.getX(), nodeFrom.getY(), nodeTo.getX(), nodeTo.getY())))
 
+			if self.showEdge:
+				# Some visual debugging, show the edge as thicker and blue and draw the face.
+				gl.glLineWidth(5)
+				glColor4f(0, 0, 1, 1.0)
+				adjacentEdge = self.theEdgeToShow.getAdjacentEdge()
+				theFace = self.theEdgeToShow.getFace()
+				if adjacentEdge != None:
+					nodeFrom = e.getAdjacentEdge().getNode()
+					nodeTo = e.getNode()
+					pyglet.graphics.draw(4, GL_LINES, (
+						'v2f', (0, 0, 0, height, nodeFrom.getX(), nodeFrom.getY(), nodeTo.getX(), nodeTo.getY())))
+
+				n1 = theFace.getNode1()
+				n2 = theFace.getNode2()
+				n3 = theFace.getNode3()
+				pyglet.graphics.draw(3, GL_POLYGON, ('v2f', [n1.getX(),n1.getY(), n2.getX(),n2.getY(), n3.getX(),n3.getY()]))
+
 			# Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
 			# pyglet.graphics.draw(8, GL_POLYGON, ('v2f', [300,300, 300,400, 400,500, 500,500, 600,400, 600,300, 500,200, 400,200]))
 
@@ -142,6 +164,22 @@ class MainWindow(window.Window):
 	def on_mouse_release(self, x, y, button, modifiers):
 		nodeNew = Node.Node(x, y)
 		self.graph.addNode(nodeNew)
+
+	def on_key_press(self, symbol, modifiers):
+		if symbol == 97:
+			# key press A
+			print("a pressed")
+			pressedA = True
+		elif symbol == 65307:
+			# escape key is pressed
+			exit()
+		elif symbol == 98:
+			self.showEdge = True
+		elif symbol == 118:
+			self.showEdge = False
+
+	def on_key_release(self, symbol, modifiers):
+		pass
 
 
 if __name__ == "__main__":
