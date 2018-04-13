@@ -1,5 +1,6 @@
 import objects.Node as Node
 import objects.Edge as Edge
+import objects.Face as Face
 
 class Graph():
 	def __init__(self, nodes = [], edges = [], faces = []):
@@ -36,11 +37,22 @@ class Graph():
 		return s > 0 and t > 0 and 1-s-t > 0
 
 	def addNode(self, node):
-		self.nodes.append(node)
 		# We have added a node, so we want to find out which face it is in and connect it with edges
 		for f in self.faces:
 			if self.inFace(f.getNode1(), f.getNode2(), f.getNode3(), node):
-				print("it's in! IT'S IN!!!!")
+				self.edges.append(Edge.Edge(node, f.getNode1()))
+				self.edges.append(Edge.Edge(node, f.getNode2()))
+				self.edges.append(Edge.Edge(node, f.getNode3()))
+
+				# We will add the 3 newly created faces.
+				self.faces.append(Face.Face(node, f.getNode1(), f.getNode2()))
+				self.faces.append(Face.Face(node, f.getNode2(), f.getNode3()))
+				self.faces.append(Face.Face(node, f.getNode3(), f.getNode1()))
+
+				# The original face is now replaced with 3 new ones, so we will remove the original
+				self.faces.remove(f)
+
+		self.nodes.append(node)
 
 
 	def getConvexHullEdges(self):
