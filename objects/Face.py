@@ -1,5 +1,5 @@
 
-class Face():
+class Face:
     def __init__(self, node1, node2, node3, edge = None):
         self.node1 = node1
         self.node2 = node2

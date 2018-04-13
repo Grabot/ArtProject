@@ -1,4 +1,4 @@
-class Edge():
+class Edge:
     def __init__(self, nodeFrom, nodeTo):
         self.nodeFrom = nodeFrom
         self.nodeTo = nodeTo
