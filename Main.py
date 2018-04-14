@@ -21,9 +21,9 @@ class MainWindow(window.Window):
         self.voronoiImage = VoronoiImage.VoronoiImage(imageName)
 
         # Mannually add 4 nodes with triangulation edges far outside the sight to make it easy to make the delaunay and voronoi calculations.
-        node1 = Node.Node(20, 20)
-        node2 = Node.Node(1000, 20)
-        node3 = Node.Node(500, 700)
+        node1 = Node.Node(-99999999, -99999999)
+        node2 = Node.Node(99999999, -99999999)
+        node3 = Node.Node(0, 99999999)
 
         face1 = Face.Face(node1, node2, node3)
 

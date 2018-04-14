@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="48c886e9-2b08-4231-9949-dbc9e03a8dc7" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Main.py" afterPath="$PROJECT_DIR$/Main.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/objects/Graph.py" afterPath="$PROJECT_DIR$/objects/Graph.py" />
     </list>
     <ignored path="ArtProject.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -23,11 +22,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Main.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="25" column="32" selection-start-line="25" selection-start-column="32" selection-end-line="25" selection-end-column="32" />
+            <state relative-caret-position="289">
+              <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -63,11 +62,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Graph.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Graph.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/objects/Graph.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="102" column="78" selection-start-line="102" selection-start-column="78" selection-end-line="102" selection-end-column="78" />
+            <state relative-caret-position="255">
+              <caret line="99" column="46" selection-start-line="99" selection-start-column="46" selection-end-line="99" selection-end-column="46" />
               <folding>
                 <element signature="e#0#27#0" expanded="true" />
               </folding>
@@ -110,8 +109,8 @@
         <option value="$PROJECT_DIR$/objects/Face.py" />
         <option value="$PROJECT_DIR$/objects/Edge.py" />
         <option value="$PROJECT_DIR$/objects/HalfEdge.py" />
-        <option value="$PROJECT_DIR$/Main.py" />
         <option value="$PROJECT_DIR$/objects/Graph.py" />
+        <option value="$PROJECT_DIR$/Main.py" />
       </list>
     </option>
   </component>
@@ -491,14 +490,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="25" column="32" selection-start-line="25" selection-start-column="32" selection-end-line="25" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/objects/Node.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
@@ -525,11 +516,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/objects/Graph.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="102" column="78" selection-start-line="102" selection-start-column="78" selection-end-line="102" selection-end-column="78" />
+        <state relative-caret-position="255">
+          <caret line="99" column="46" selection-start-line="99" selection-start-column="46" selection-end-line="99" selection-end-column="46" />
           <folding>
             <element signature="e#0#27#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
