@@ -85,9 +85,9 @@ class Graph:
                 edge3_2.setAdjacentEdge(edge3_1)
 
                 # We will add the 3 newly created faces. with a half edge for each face. and set the faces on the half edges
-                face1 = Face.Face(node, f.getNode1(), f.getNode2(), edge1_1)
-                face2 = Face.Face(node, f.getNode2(), f.getNode3(), edge2_1)
-                face3 = Face.Face(node, f.getNode3(), f.getNode1(), edge3_1)
+                face1 = Face.Face(node, f.getNode1(), f.getNode3(), edge1_1)
+                face2 = Face.Face(node, f.getNode2(), f.getNode1(), edge2_1)
+                face3 = Face.Face(node, f.getNode3(), f.getNode2(), edge3_1)
 
                 edge1_1.setFace(face1)
                 edge1_2.setFace(face2)
@@ -95,6 +95,9 @@ class Graph:
                 edge2_2.setFace(face3)
                 edge3_1.setFace(face3)
                 edge3_2.setFace(face1)
+                edge1.setFace(face1)
+                edge2.setFace(face2)
+                edge3.setFace(face3)
 
                 self.faces.append(face1)
                 self.faces.append(face2)
