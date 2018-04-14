@@ -21,66 +21,33 @@ class MainWindow(window.Window):
         self.voronoiImage = VoronoiImage.VoronoiImage(imageName)
 
         # Mannually add 4 nodes with triangulation edges far outside the sight to make it easy to make the delaunay and voronoi calculations.
-        node1 = Node.Node(-99999999, -99999999)
-        node2 = Node.Node(99999999, -99999999)
-        node3 = Node.Node(0, 99999999)
-        # We'll also initialize a point in the field (not 0, 0 since that's the bottom left corner)
-        node4 = Node.Node(600, 400)
+        node1 = Node.Node(20, 20)
+        node2 = Node.Node(1000, 20)
+        node3 = Node.Node(500, 700)
 
-        face1 = Face.Face(node1, node2, node4)
-        face2 = Face.Face(node2, node3, node4)
-        face3 = Face.Face(node3, node1, node4)
+        face1 = Face.Face(node1, node2, node3)
 
         halfEdge1 = HalfEdge.HalfEdge(node1, face1)
         halfEdge2 = HalfEdge.HalfEdge(node2, face1)
-        halfEdge3 = HalfEdge.HalfEdge(node4, face1)
-        halfEdge4 = HalfEdge.HalfEdge(node2, face2)
-        halfEdge5 = HalfEdge.HalfEdge(node3, face2)
-        halfEdge6 = HalfEdge.HalfEdge(node4, face2)
-        halfEdge7 = HalfEdge.HalfEdge(node3, face3)
-        halfEdge8 = HalfEdge.HalfEdge(node1, face3)
-        halfEdge9 = HalfEdge.HalfEdge(node4, face3)
+        halfEdge3 = HalfEdge.HalfEdge(node3, face1)
 
-        halfEdge1.setAdjacentEdge(halfEdge9)
-        halfEdge1.setNextEdge(halfEdge2)
         # It is possible that there isn't a adjacent Edge. This is the case for the outer edges.
+        halfEdge1.setNextEdge(halfEdge2)
         halfEdge2.setNextEdge(halfEdge3)
-        halfEdge3.setAdjacentEdge(halfEdge4)
         halfEdge3.setNextEdge(halfEdge1)
-        halfEdge4.setAdjacentEdge(halfEdge3)
-        halfEdge4.setNextEdge(halfEdge5)
-        halfEdge5.setNextEdge(halfEdge6)
-        halfEdge6.setAdjacentEdge(halfEdge7)
-        halfEdge6.setNextEdge(halfEdge4)
-        halfEdge7.setAdjacentEdge(halfEdge6)
-        halfEdge7.setNextEdge(halfEdge8)
-        halfEdge8.setNextEdge(halfEdge9)
-        halfEdge9.setAdjacentEdge(halfEdge1)
-        halfEdge9.setNextEdge(halfEdge7)
 
         face1.setEdge(halfEdge1)
-        face2.setEdge(halfEdge4)
-        face3.setEdge(halfEdge7)
 
         nodes = []
         nodes.append(node1)
         nodes.append(node2)
         nodes.append(node3)
-        nodes.append(node4)
         faces = []
         faces.append(face1)
-        faces.append(face2)
-        faces.append(face3)
         halfEdges = []
         halfEdges.append(halfEdge1)
         halfEdges.append(halfEdge2)
         halfEdges.append(halfEdge3)
-        halfEdges.append(halfEdge4)
-        halfEdges.append(halfEdge5)
-        halfEdges.append(halfEdge6)
-        halfEdges.append(halfEdge7)
-        halfEdges.append(halfEdge8)
-        halfEdges.append(halfEdge9)
 
         # We will select a sorta random edge that is not on the outside.
         self.theEdgeToShow = halfEdges[2]
