@@ -52,8 +52,8 @@ class MainWindow(window.Window):
         halfEdge5.setNextEdge(halfEdge6)
         halfEdge6.setAdjacentEdge(halfEdge7)
         halfEdge6.setNextEdge(halfEdge4)
-        halfEdge7.setAdjacentEdge(halfEdge8)
-        halfEdge7.setNextEdge(halfEdge6)
+        halfEdge7.setAdjacentEdge(halfEdge6)
+        halfEdge7.setNextEdge(halfEdge8)
         halfEdge8.setNextEdge(halfEdge9)
         halfEdge9.setAdjacentEdge(halfEdge1)
         halfEdge9.setNextEdge(halfEdge7)
@@ -81,11 +81,14 @@ class MainWindow(window.Window):
         halfEdges.append(halfEdge7)
         halfEdges.append(halfEdge8)
         halfEdges.append(halfEdge9)
-        self.graph = Graph.Graph(nodes, halfEdges, faces)
-        # The graph doesn't have any nodes or edges yet.
 
         # We will select a sorta random edge that is not on the outside.
-        self.theEdgeToShow = halfEdges[3]
+        self.theEdgeToShow = halfEdges[2]
+        self.showFace = False
+        self.showNextEdge = False
+        self.getAdjacentEdge = False
+
+        self.graph = Graph.Graph(nodes, halfEdges, faces)
 
     def main_loop(self):
         clock.set_fps_limit(30)
@@ -94,6 +97,14 @@ class MainWindow(window.Window):
         while not self.has_exit:
             self.dispatch_events()
             self.clear()
+
+            if self.showNextEdge:
+                self.showNextEdge = False
+                self.theEdgeToShow = self.theEdgeToShow.getNextEdge()
+            if self.getAdjacentEdge:
+                self.getAdjacentEdge = False
+                if self.theEdgeToShow.getAdjacentEdge() is not None:
+                    self.theEdgeToShow = self.theEdgeToShow.getAdjacentEdge()
 
             # White, so reset the colour
             glColor4f(1, 1, 1, 1)
@@ -129,18 +140,20 @@ class MainWindow(window.Window):
                 gl.glLineWidth(5)
                 glColor4f(0, 0, 1, 1.0)
                 adjacentEdge = self.theEdgeToShow.getAdjacentEdge()
-                theFace = self.theEdgeToShow.getFace()
                 if adjacentEdge != None:
-                    nodeFrom = e.getAdjacentEdge().getNode()
-                    nodeTo = e.getNode()
+                    nodeFrom = self.theEdgeToShow.getAdjacentEdge().getNode()
+                    nodeTo = self.theEdgeToShow.getNode()
+                    # print("edge name is " + self.showEdge)
                     pyglet.graphics.draw(4, GL_LINES, (
                         'v2f', (0, 0, 0, height, nodeFrom.getX(), nodeFrom.getY(), nodeTo.getX(), nodeTo.getY())))
 
-                n1 = theFace.getNode1()
-                n2 = theFace.getNode2()
-                n3 = theFace.getNode3()
-                pyglet.graphics.draw(3, GL_POLYGON,
-                                     ('v2f', [n1.getX(), n1.getY(), n2.getX(), n2.getY(), n3.getX(), n3.getY()]))
+                if self.showFace:
+                    theFace = self.theEdgeToShow.getFace()
+                    n1 = theFace.getNode1()
+                    n2 = theFace.getNode2()
+                    n3 = theFace.getNode3()
+                    pyglet.graphics.draw(3, GL_POLYGON,
+                                         ('v2f', [n1.getX(), n1.getY(), n2.getX(), n2.getY(), n3.getX(), n3.getY()]))
 
             # Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
             # pyglet.graphics.draw(8, GL_POLYGON, ('v2f', [300,300, 300,400, 400,500, 500,500, 600,400, 600,300, 500,200, 400,200]))
@@ -166,6 +179,7 @@ class MainWindow(window.Window):
         self.graph.addNode(nodeNew)
 
     def on_key_press(self, symbol, modifiers):
+        print(symbol)
         if symbol == 97:
             # key press A
             print("a pressed")
@@ -177,6 +191,14 @@ class MainWindow(window.Window):
             self.showEdge = True
         elif symbol == 118:
             self.showEdge = False
+        elif symbol == 110:
+            self.showNextEdge = True
+        elif symbol == 102:
+            self.showFace = True
+        elif symbol == 103:
+            self.showFace = False
+        elif symbol == 116:
+            self.getAdjacentEdge = True
 
     def on_key_release(self, symbol, modifiers):
         pass
