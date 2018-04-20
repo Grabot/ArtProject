@@ -75,7 +75,9 @@ class MainWindow(window.Window):
 					self.theEdgeToShow = self.theEdgeToShow.getAdjacentEdge()
 
 			if self.flipEdge:
-				self.graph.manuallyFlipEdge(self.theEdgeToShow)
+				temp = self.graph.manuallyFlipEdge(self.theEdgeToShow)
+				if temp != None:
+					self.theEdgeToShow = temp
 				self.flipEdge = False
 				print("flipping edge :)")
 

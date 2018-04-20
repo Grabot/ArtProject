@@ -91,6 +91,7 @@ class Graph:
 				self.edges.remove(e1)
 				self.edges.remove(e2)
 				print("flipping the flippin edge")
+				return e1_1
 
 
 	def incircle(self, A, B, C, D):
