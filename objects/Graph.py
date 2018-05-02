@@ -122,15 +122,11 @@ class Graph:
 			if not self.validEdge(otherFaceNode1, otherFaceNode2, otherFaceNode3, node):
 				print("edge is not valid, flip it!")
 				newEdge = self.flipEdge(edge)
-				# TODO, you should add the 3 (6?) new face edges.
 
-				newEdgeOther = newEdge.getAdjacentEdge()
+				# TODO, you should add the other edges
 				self.checkFlipEdge(newEdge, node)
-				self.checkFlipEdge(newEdge.getNextEdge(), node)
-				self.checkFlipEdge(newEdge.getNextEdge().getNextEdge(), node)
-				self.checkFlipEdge(newEdgeOther, node)
-				self.checkFlipEdge(newEdgeOther.getNextEdge(), node)
-				self.checkFlipEdge(newEdgeOther.getNextEdge().getNextEdge(), node)
+			else:
+				return False
 
 
 	def inFace(self, p0, p1, p2, node):
@@ -229,9 +225,13 @@ class Graph:
 
 				# We want to check whether or not the edges are valid delaunay, we will do that by comparing
 				# the new node with the 3 triangle nodes of the adjacent face.
-				self.checkFlipEdge(edge1, node)
-				self.checkFlipEdge(edge2, node)
-				self.checkFlipEdge(edge3, node)
+				flip1 = self.checkFlipEdge(edge1, node)
+				flip2 = True
+				if not flip1:
+					flip2 = self.checkFlipEdge(edge2, node)
+				if not flip1 or not flip2:
+					self.checkFlipEdge(edge3, node)
+
 
 
 		self.nodes.append(node)
