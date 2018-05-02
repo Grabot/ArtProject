@@ -30,71 +30,77 @@ class Graph:
 	def getFaces(self):
 		return self.faces
 
+
+	def flipEdge(self, e):
+		# First a simple check if we can flip the edge.
+		if e.getAdjacentEdge() == None:
+			return
+		# First we find the 2 faces that the edge has.
+		e1 = e
+		e2 = e.getAdjacentEdge()
+		face1 = e1.getFace()
+		face2 = e2.getFace()
+		node1 = e1.getNextEdge().getNode()
+		node2 = e2.getNextEdge().getNode()
+
+		# Create the new Half Edge.
+		e1_1 = HalfEdge.HalfEdge(node1)
+		e2_1 = HalfEdge.HalfEdge(node2)
+
+		e1_1.setAdjacentEdge(e2_1)
+		e2_1.setAdjacentEdge(e1_1)
+
+		# Set the correct next edges.
+		e1_1.setNextEdge(e1.getNextEdge().getNextEdge())
+		e2_1.setNextEdge(e2.getNextEdge().getNextEdge())
+
+		# The new next edge here used to be on the corner, so it's easier to take it from the other side
+		e1_1.getNextEdge().setNextEdge(e2.getNextEdge())
+		e2_1.getNextEdge().setNextEdge(e1.getNextEdge())
+
+		e1_1.getNextEdge().getNextEdge().setNextEdge(e1_1)
+		e2_1.getNextEdge().getNextEdge().setNextEdge(e2_1)
+
+		# Create the new faces.
+		node1Face1 = e1_1.getNode()
+		node2Face1 = e1_1.getNextEdge().getNode()
+		node3Face1 = e1_1.getNextEdge().getNextEdge().getNode()
+		newFace1 = Face.Face(node1Face1, node2Face1, node3Face1, e1_1)
+
+		# Create face 2
+		node1Face2 = e2_1.getNode()
+		node2Face2 = e2_1.getNextEdge().getNode()
+		node3Face2 = e2_1.getNextEdge().getNextEdge().getNode()
+		newFace2 = Face.Face(node1Face2, node2Face2, node3Face2, e2_1)
+
+		e1_1.setFace(newFace1)
+		e2_1.setFace(newFace2)
+
+		# Add the new faces and also remove the old ones.
+		self.faces.append(newFace1)
+		self.faces.append(newFace2)
+
+		self.faces.remove(face1)
+		self.faces.remove(face2)
+
+		# Do the same with the new edges.
+		self.edges.append(e1_1)
+		self.edges.append(e2_1)
+
+		self.edges.remove(e1)
+		self.edges.remove(e2)
+		print("flipping the flippin edge")
+		return e1_1
+
+
 	def manuallyFlipEdge(self, edgeToFlip):
 		for e in self.edges:
 			if e == edgeToFlip:
-				# First a simple check if we can flip the edge.
-				if e.getAdjacentEdge() == None:
-					return
-				# First we find the 2 faces that the edge has.
-				e1 = e
-				e2 = e.getAdjacentEdge()
-				face1 = e1.getFace()
-				face2 = e2.getFace()
-				node1 = e1.getNextEdge().getNode()
-				node2 = e2.getNextEdge().getNode()
-
-				# Create the new Half Edge.
-				e1_1 = HalfEdge.HalfEdge(node1)
-				e2_1 = HalfEdge.HalfEdge(node2)
-
-				e1_1.setAdjacentEdge(e2_1)
-				e2_1.setAdjacentEdge(e1_1)
-
-				# Set the correct next edges.
-				e1_1.setNextEdge(e1.getNextEdge().getNextEdge())
-				e2_1.setNextEdge(e2.getNextEdge().getNextEdge())
-
-				# The new next edge here used to be on the corner, so it's easier to take it from the other side
-				e1_1.getNextEdge().setNextEdge(e2.getNextEdge())
-				e2_1.getNextEdge().setNextEdge(e1.getNextEdge())
-
-				e1_1.getNextEdge().getNextEdge().setNextEdge(e1_1)
-				e2_1.getNextEdge().getNextEdge().setNextEdge(e2_1)
-
-				# Create the new faces.
-				node1Face1 = e1_1.getNode()
-				node2Face1 = e1_1.getNextEdge().getNode()
-				node3Face1 = e1_1.getNextEdge().getNextEdge().getNode()
-				newFace1 = Face.Face(node1Face1, node2Face1, node3Face1, e1_1)
-
-				# Create face 2
-				node1Face2 = e2_1.getNode()
-				node2Face2 = e2_1.getNextEdge().getNode()
-				node3Face2 = e2_1.getNextEdge().getNextEdge().getNode()
-				newFace2 = Face.Face(node1Face2, node2Face2, node3Face2, e2_1)
-
-				e1_1.setFace(newFace1)
-				e2_1.setFace(newFace2)
-
-				# Add the new faces and also remove the old ones.
-				self.faces.append(newFace1)
-				self.faces.append(newFace2)
-
-				self.faces.remove(face1)
-				self.faces.remove(face2)
-
-				# Do the same with the new edges.
-				self.edges.append(e1_1)
-				self.edges.append(e2_1)
-
-				self.edges.remove(e1)
-				self.edges.remove(e2)
 				print("flipping the flippin edge")
-				return e1_1
+				return self.flipEdge(e)
 
 
-	def incircle(self, A, B, C, D):
+	def inCircle(self, A, B, C, D):
 		# returns True is D lies in the circumcircle of ABC
 		# This is done by determining the determinant of a matrix.
 		M = [[A.getX(), A.getY(), (pow(A.getX(), 2) + pow(A.getY(), 2)), 1],
@@ -103,8 +109,29 @@ class Graph:
 			 [D.getX(), D.getY(), (pow(D.getX(), 2) + pow(D.getY(), 2)), 1]]
 		return numpy.linalg.det(M) > 0
 
-	def validEdge(self):
-		print("test edge")
+	def validEdge(self, triangleNode1, triangleNode2, triangleNode3, node):
+		return not self.inCircle(triangleNode1, triangleNode2, triangleNode3, node)
+
+
+	def checkFlipEdge(self, edge, node):		
+		if edge.getAdjacentEdge() != None:
+			adjacentEdge = edge.getAdjacentEdge()
+			otherFaceNode1 = adjacentEdge.getNode()
+			otherFaceNode2 = adjacentEdge.getNextEdge().getNode()
+			otherFaceNode3 = adjacentEdge.getNextEdge().getNextEdge().getNode()
+			if not self.validEdge(otherFaceNode1, otherFaceNode2, otherFaceNode3, node):
+				print("edge is not valid, flip it!")
+				newEdge = self.flipEdge(edge)
+				# TODO, you should add the 3 (6?) new face edges.
+
+				newEdgeOther = newEdge.getAdjacentEdge()
+				self.checkFlipEdge(newEdge, node)
+				self.checkFlipEdge(newEdge.getNextEdge(), node)
+				self.checkFlipEdge(newEdge.getNextEdge().getNextEdge(), node)
+				self.checkFlipEdge(newEdgeOther, node)
+				self.checkFlipEdge(newEdgeOther.getNextEdge(), node)
+				self.checkFlipEdge(newEdgeOther.getNextEdge().getNextEdge(), node)
+
 
 	def inFace(self, p0, p1, p2, node):
 		Area = 0.5 * (-p1.getY() * p2.getX() + p0.getY() * (-p1.getX() + p2.getX()) + p0.getX() * (
@@ -200,9 +227,15 @@ class Graph:
 				# The original face is now replaced with 3 new ones, so we will remove the original
 				self.faces.remove(f)
 
+				# We want to check whether or not the edges are valid delaunay, we will do that by comparing
+				# the new node with the 3 triangle nodes of the adjacent face.
+				self.checkFlipEdge(edge1, node)
+				self.checkFlipEdge(edge2, node)
+				self.checkFlipEdge(edge3, node)
+
+
 		self.nodes.append(node)
 
-		
 
 	def getConvexHullEdges(self):
 		return self.convexHullEdges
