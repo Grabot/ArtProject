@@ -2,6 +2,7 @@ import objects.Node as Node
 import objects.Edge as Edge
 import objects.HalfEdge as HalfEdge
 import objects.Face as Face
+import random
 import numpy
 
 class Graph:
@@ -28,6 +29,7 @@ class Graph:
 		self.faces = faces
 
 	def getFaces(self):
+		random.shuffle(self.faces)
 		return self.faces
 
 
@@ -38,8 +40,6 @@ class Graph:
 		# First we find the 2 faces that the edge has.
 		e1 = e
 		e2 = e.getAdjacentEdge()
-		face1 = e1.getFace()
-		face2 = e2.getFace()
 		node1 = e1.getNextEdge().getNode()
 		node2 = e2.getNextEdge().getNode()
 
@@ -76,12 +76,15 @@ class Graph:
 		e1_1.setFace(newFace1)
 		e2_1.setFace(newFace2)
 
+		e1_1.getNextEdge().setFace(newFace1)
+		e2_1.getNextEdge().setFace(newFace2)
+
+		e1_1.getNextEdge().getNextEdge().setFace(newFace1)
+		e2_1.getNextEdge().getNextEdge().setFace(newFace2)
+
 		# Add the new faces and also remove the old ones.
 		self.faces.append(newFace1)
 		self.faces.append(newFace2)
-
-		self.faces.remove(face1)
-		self.faces.remove(face2)
 
 		# Do the same with the new edges.
 		self.edges.append(e1_1)
@@ -89,6 +92,10 @@ class Graph:
 
 		self.edges.remove(e1)
 		self.edges.remove(e2)
+
+		self.faces.remove(e1.getFace())
+		self.faces.remove(e2.getFace())
+
 		print("flipping the flippin edge")
 		return e1_1
 
@@ -113,20 +120,24 @@ class Graph:
 		return not self.inCircle(triangleNode1, triangleNode2, triangleNode3, node)
 
 
-	def checkFlipEdge(self, edge, node):		
-		if edge.getAdjacentEdge() != None:
-			adjacentEdge = edge.getAdjacentEdge()
-			otherFaceNode1 = adjacentEdge.getNode()
-			otherFaceNode2 = adjacentEdge.getNextEdge().getNode()
-			otherFaceNode3 = adjacentEdge.getNextEdge().getNextEdge().getNode()
-			if not self.validEdge(otherFaceNode1, otherFaceNode2, otherFaceNode3, node):
-				print("edge is not valid, flip it!")
-				newEdge = self.flipEdge(edge)
+	def checkFlipEdge(self, edges, node):
 
-				# TODO, you should add the other edges
-				self.checkFlipEdge(newEdge, node)
-			else:
-				return False
+		print("flipping edges")
+		while edges:
+			edge = edges.pop()
+
+			if edge.getAdjacentEdge() != None:
+				adjacentEdge = edge.getAdjacentEdge()
+				otherFaceNode1 = adjacentEdge.getNode()
+				otherFaceNode2 = adjacentEdge.getNextEdge().getNode()
+				otherFaceNode3 = adjacentEdge.getNextEdge().getNextEdge().getNode()
+				if not self.validEdge(otherFaceNode1, otherFaceNode2, otherFaceNode3, node):
+					print("edge is not valid, flip it!")
+					newEdge = self.flipEdge(edge)
+					edges.append(newEdge.getNextEdge())
+					edges.append(newEdge.getNextEdge().getNextEdge())
+					edges.append(newEdge.getAdjacentEdge().getNextEdge())
+					edges.append(newEdge.getAdjacentEdge().getNextEdge().getNextEdge())
 
 
 	def inFace(self, p0, p1, p2, node):
@@ -141,6 +152,7 @@ class Graph:
 		return s > 0 and t > 0 and 1 - s - t > 0
 
 	def addNode(self, node):
+		print("add node")
 		# We have added a node, so we want to find out which face it is in and connect it with edges
 		for f in self.faces:
 			if self.inFace(f.getNode1(), f.getNode2(), f.getNode3(), node):
@@ -225,12 +237,8 @@ class Graph:
 
 				# We want to check whether or not the edges are valid delaunay, we will do that by comparing
 				# the new node with the 3 triangle nodes of the adjacent face.
-				flip1 = self.checkFlipEdge(edge1, node)
-				flip2 = True
-				if not flip1:
-					flip2 = self.checkFlipEdge(edge2, node)
-				if not flip1 or not flip2:
-					self.checkFlipEdge(edge3, node)
+				edgeFlipChecks = [edge1, edge2, edge3]
+				self.checkFlipEdge(edgeFlipChecks, node)
 
 
 

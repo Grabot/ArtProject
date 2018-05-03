@@ -1,3 +1,4 @@
+from random import randint
 
 class Face:
     def __init__(self, node1, node2, node3, edge = None):
@@ -5,6 +6,7 @@ class Face:
         self.node2 = node2
         self.node3 = node3
         self.edge = edge
+        self.colour = [randint(0, 255), randint(0, 255), randint(0, 255), 1.0]
 
     def setNode1(self, node1):
         self.node1 = node1
@@ -29,3 +31,6 @@ class Face:
 
     def getEdge(self):
         return self.edge
+
+    def getColour(self):
+        return self.colour

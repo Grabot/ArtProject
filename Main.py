@@ -10,6 +10,7 @@ import objects.Node as Node
 import objects.HalfEdge as HalfEdge
 import objects.Face as Face
 import objects.Graph as Graph
+import random
 
 
 class MainWindow(window.Window):
@@ -52,6 +53,7 @@ class MainWindow(window.Window):
 		# We will select a sorta random edge that is not on the outside.
 		self.theEdgeToShow = halfEdges[2]
 		self.showFace = False
+		self.showAllFaces = False
 		self.showNextEdge = False
 		self.getAdjacentEdge = False
 		self.flipEdge = False
@@ -89,6 +91,18 @@ class MainWindow(window.Window):
 			gl.glEnable(gl.GL_BLEND)
 			gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 			# Draw the nodes with how you can give it a colour
+
+			if self.showAllFaces:
+
+				for f in self.graph.getFaces():
+					colour = f.getColour()
+					glColor4f(colour[0]/256, colour[1]/256, colour[2]/256, colour[3])
+					n1 = f.getNode1()
+					n2 = f.getNode2()
+					n3 = f.getNode3()
+					pyglet.graphics.draw(3, GL_POLYGON,
+										 ('v2f', [n1.getX(), n1.getY(), n2.getX(), n2.getY(), n3.getX(), n3.getY()]))
+
 			glColor4f(1, 0, 0, 1.0)
 			for n in self.graph.getNodes():
 				nodeX = n.getX()
@@ -133,6 +147,7 @@ class MainWindow(window.Window):
 			# Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
 			# pyglet.graphics.draw(8, GL_POLYGON, ('v2f', [300,300, 300,400, 400,500, 500,500, 600,400, 600,300, 500,200, 400,200]))
 
+			glColor4f(0, 0, 0, 1.0)
 			clock.tick()
 			self.flip()
 
@@ -175,6 +190,10 @@ class MainWindow(window.Window):
 			self.getAdjacentEdge = True
 		elif symbol == 112:
 			self.flipEdge = True
+		elif symbol == 122:
+			self.showAllFaces = True
+		elif symbol == 120:
+			self.showAllFaces = False
 
 	def on_key_release(self, symbol, modifiers):
 		pass
