@@ -119,24 +119,27 @@ class Graph:
 		return not self.inCircle(triangleNode1, triangleNode2, triangleNode3, node)
 
 
-	def checkFlipEdge(self, edges, node):
+	def checkFlipEdge(self, flipEdges, node):
 
 		print("flipping edges")
-		while edges:
-			edge = edges.pop()
+		while flipEdges:
+			edge = flipEdges.pop()
 
-			if edge.getAdjacentEdge() != None:
-				adjacentEdge = edge.getAdjacentEdge()
-				otherFaceNode1 = adjacentEdge.getNode()
-				otherFaceNode2 = adjacentEdge.getNextEdge().getNode()
-				otherFaceNode3 = adjacentEdge.getNextEdge().getNextEdge().getNode()
-				if not self.validEdge(otherFaceNode1, otherFaceNode2, otherFaceNode3, node):
-					print("edge is not valid, flip it!")
-					newEdge = self.flipEdge(edge)
-					# edges.append(newEdge.getNextEdge())
-					# edges.append(newEdge.getNextEdge().getNextEdge())
-					# edges.append(newEdge.getAdjacentEdge().getNextEdge())
-					# edges.append(newEdge.getAdjacentEdge().getNextEdge().getNextEdge())
+			# It is possible that the edge has since been removed.
+			if edge in self.edges:
+				if edge.getAdjacentEdge() != None:
+					adjacentEdge = edge.getAdjacentEdge()
+					otherFaceNode1 = adjacentEdge.getNode()
+					otherFaceNode2 = adjacentEdge.getNextEdge().getNode()
+					otherFaceNode3 = adjacentEdge.getNextEdge().getNextEdge().getNode()
+					if not self.validEdge(otherFaceNode1, otherFaceNode2, otherFaceNode3, node):
+						print("edge is not valid, flip it!")
+						newEdge = self.flipEdge(edge)
+						# flipEdges.append(newEdge.getNextEdge())
+						# flipEdges.append(newEdge.getNextEdge().getNextEdge())
+						# if newEdge.getAdjacentEdge != None:
+						# 	flipEdges.append(newEdge.getAdjacentEdge().getNextEdge())
+						# 	flipEdges.append(newEdge.getAdjacentEdge().getNextEdge().getNextEdge())
 
 
 	def inFace(self, p0, p1, p2, node):
