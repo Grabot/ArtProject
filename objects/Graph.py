@@ -103,7 +103,6 @@ class Graph:
 	def manuallyFlipEdge(self, edgeToFlip):
 		for e in self.edges:
 			if e == edgeToFlip:
-				print("flipping the flippin edge")
 				return self.flipEdge(e)
 
 
@@ -134,10 +133,10 @@ class Graph:
 				if not self.validEdge(otherFaceNode1, otherFaceNode2, otherFaceNode3, node):
 					print("edge is not valid, flip it!")
 					newEdge = self.flipEdge(edge)
-					edges.append(newEdge.getNextEdge())
-					edges.append(newEdge.getNextEdge().getNextEdge())
-					edges.append(newEdge.getAdjacentEdge().getNextEdge())
-					edges.append(newEdge.getAdjacentEdge().getNextEdge().getNextEdge())
+					# edges.append(newEdge.getNextEdge())
+					# edges.append(newEdge.getNextEdge().getNextEdge())
+					# edges.append(newEdge.getAdjacentEdge().getNextEdge())
+					# edges.append(newEdge.getAdjacentEdge().getNextEdge().getNextEdge())
 
 
 	def inFace(self, p0, p1, p2, node):
