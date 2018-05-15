@@ -10,7 +10,7 @@ import objects.Node as Node
 import objects.HalfEdge as HalfEdge
 import objects.Face as Face
 import objects.Graph as Graph
-import random
+from random import randint
 
 
 class MainWindow(window.Window):
@@ -54,6 +54,7 @@ class MainWindow(window.Window):
         self.theEdgeToShow = halfEdges[2]
         self.showFace = False
         self.showAllFaces = False
+        self.showVoronoiFaces = False
         self.showNextEdge = False
         self.getAdjacentEdge = False
         self.flipEdge = False
@@ -64,9 +65,19 @@ class MainWindow(window.Window):
         clock.set_fps_limit(30)
         nodeSize = 5
 
+        timer = 0
         while not self.has_exit:
             self.dispatch_events()
             self.clear()
+
+            timer += 1
+            if timer % 10 == 0:
+                nodeX = randint(0, self.width)
+                nodeY = randint(0, self.height)
+                print("adding random node on position: x:", str(nodeX), "y:", str(nodeY))
+
+                nodeNew = Node.Node(nodeX, nodeY)
+                self.graph.addNode(nodeNew)
 
             if self.showNextEdge:
                 self.showNextEdge = False
@@ -102,6 +113,9 @@ class MainWindow(window.Window):
                     n3 = f.getNode3()
                     pyglet.graphics.draw(3, GL_POLYGON,
                                          ('v2f', [n1.getX(), n1.getY(), n2.getX(), n2.getY(), n3.getX(), n3.getY()]))
+
+            if self.showVoronoiFaces:
+                print("show Voronoi faces")
 
             glColor4f(1, 0, 0, 1.0)
             for n in self.graph.getNodes():
@@ -169,6 +183,7 @@ class MainWindow(window.Window):
         self.graph.addNode(nodeNew)
 
     def on_key_press(self, symbol, modifiers):
+        print("symbol", str(symbol))
         if symbol == 97:
             # key press A
             print("a pressed")
@@ -194,6 +209,10 @@ class MainWindow(window.Window):
             self.showAllFaces = True
         elif symbol == 120:
             self.showAllFaces = False
+        elif symbol == 119:
+            self.showVoronoiFaces = True
+        elif symbol == 101:
+            self.showVoronoiFaces = False
 
     def on_key_release(self, symbol, modifiers):
         pass
