@@ -58,6 +58,7 @@ class MainWindow(window.Window):
         self.showNextEdge = False
         self.getAdjacentEdge = False
         self.flipEdge = False
+        self.amountOfNodes = 200
 
         self.graph = Graph.Graph(nodes, halfEdges, faces)
 
@@ -70,14 +71,15 @@ class MainWindow(window.Window):
             self.dispatch_events()
             self.clear()
 
-            timer += 1
-            if timer % 10 == 0:
-                nodeX = randint(0, self.width)
-                nodeY = randint(0, self.height)
-                print("adding random node on position: x:", str(nodeX), "y:", str(nodeY))
+            # # Randomly adding the nodes untill a certain amount
+            # timer += 1
+            # if timer % 1 == 0 and self.amountOfNodes > len(self.graph.getNodes()):
+            #     nodeX = randint(0, self.width)
+            #     nodeY = randint(0, self.height)
+            #     print("adding random node on position: x:", str(nodeX), "y:", str(nodeY))
 
-                nodeNew = Node.Node(nodeX, nodeY)
-                self.graph.addNode(nodeNew)
+            #     nodeNew = Node.Node(nodeX, nodeY)
+            #     self.graph.addNode(nodeNew)
 
             if self.showNextEdge:
                 self.showNextEdge = False
