@@ -71,15 +71,18 @@ class MainWindow(window.Window):
             self.dispatch_events()
             self.clear()
 
-            # # Randomly adding the nodes untill a certain amount
-            # timer += 1
-            # if timer % 1 == 0 and self.amountOfNodes > len(self.graph.getNodes()):
-            #     nodeX = randint(0, self.width)
-            #     nodeY = randint(0, self.height)
-            #     print("adding random node on position: x:", str(nodeX), "y:", str(nodeY))
+            timer += 1
+            if timer == 20:
+                nodeX = 737
+                nodeY = 702
+                nodeNew = Node.Node(nodeX, nodeY)
+                self.graph.addNode(nodeNew)
 
-            #     nodeNew = Node.Node(nodeX, nodeY)
-            #     self.graph.addNode(nodeNew)
+            if timer == 50:
+                nodeX = 190
+                nodeY = 210
+                nodeNew = Node.Node(nodeX, nodeY)
+                self.graph.addNode(nodeNew)
 
             if self.showNextEdge:
                 self.showNextEdge = False
@@ -181,6 +184,7 @@ class MainWindow(window.Window):
         pass
 
     def on_mouse_release(self, x, y, button, modifiers):
+        print("node added at x:", x, "y:", y)
         nodeNew = Node.Node(x, y)
         self.graph.addNode(nodeNew)
 
