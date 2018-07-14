@@ -2,6 +2,7 @@ import os
 from pyglet import image
 
 
+# noinspection SpellCheckingInspection
 class VoronoiImage:
     def __init__(self, imageName):
         directory = os.path.abspath(os.path.dirname(__file__))

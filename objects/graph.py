@@ -9,6 +9,8 @@ class Graph:
     def __init__(self, nodes=None, edges=None, faces=None):
         self.nodes = nodes or []
         self.edges = edges or []
+        # Starting with _ is the Python way to mark this field as private.
+        # This happens because external code should use the randomized get_faces() method.
         self._faces = faces or []
     
     def get_faces(self):
@@ -38,28 +40,29 @@ class Graph:
         print("flipping the flippin edge")
         return [e1_1, e2_1]
     
-    def manuallyFlipEdge(self, edgeToFlip):
+    def manually_flip_edge(self, edge):
         for e in self.edges:
-            if e == edgeToFlip:
+            if e == edge:
                 return self.flip_edge(e)[0]
     
-    def inCircle(self, A, B, C, D):
-        # returns True is D lies in the circumcircle of ABC
-        # This is done by determining the determinant of a matrix.
+    """
+    Returns True is D lies in the circumcircle of ABC
+    This is done by determining the determinant of a matrix.
+    """
+    def is_in_circle(self, A, B, C, D):
         M = [[A.x, A.y, (pow(A.x, 2) + pow(A.y, 2)), 1],
              [B.x, B.y, (pow(B.x, 2) + pow(B.y, 2)), 1],
              [C.x, C.y, (pow(C.x, 2) + pow(C.y, 2)), 1],
              [D.x, D.y, (pow(D.x, 2) + pow(D.y, 2)), 1]]
         return numpy.linalg.det(M) > 0
     
-    def validEdge(self, triangleNode1, triangleNode2, triangleNode3, node):
-        return not self.inCircle(triangleNode1, triangleNode2, triangleNode3, node)
+    def is_valid_edge(self, triangleNode1, triangleNode2, triangleNode3, node):
+        return not self.is_in_circle(triangleNode1, triangleNode2, triangleNode3, node)
     
-    def checkFlipEdge(self, flipEdges, node):
-        
+    def check_flip_edge(self, flip_edges, node):
         print("flipping edges")
-        while flipEdges:
-            edge = flipEdges.pop()
+        while flip_edges:
+            edge = flip_edges.pop()
             
             # It is possible that the edge has since been removed.
             if edge in self.edges:
@@ -68,15 +71,15 @@ class Graph:
                     otherFaceNode1 = adjacentEdge.node
                     otherFaceNode2 = adjacentEdge.next_edge.node
                     otherFaceNode3 = adjacentEdge.next_edge.next_edge.node
-                    if not self.validEdge(otherFaceNode1, otherFaceNode2, otherFaceNode3, node):
+                    if not self.is_valid_edge(otherFaceNode1, otherFaceNode2, otherFaceNode3, node):
                         print("edge is not valid, flip it!")
                         [e1_1, e2_1] = self.flip_edge(edge)
-                        flipEdges.append(e1_1.next_edge)
-                        flipEdges.append(e1_1.next_edge.next_edge)
-                        flipEdges.append(e2_1.next_edge)
-                        flipEdges.append(e2_1.next_edge.next_edge)
+                        flip_edges.append(e1_1.next_edge)
+                        flip_edges.append(e1_1.next_edge.next_edge)
+                        flip_edges.append(e2_1.next_edge)
+                        flip_edges.append(e2_1.next_edge.next_edge)
     
-    def inFace(self, p0, p1, p2, node):
+    def is_in_face(self, p0, p1, p2, node):
         Area = 0.5 * (-p1.y * p2.x + p0.y * (-p1.x + p2.x) + p0.x * (
                 p1.y - p2.y) + p1.x * p2.y)
         
@@ -87,16 +90,16 @@ class Graph:
         
         return s > 0 and t > 0 and 1 - s - t > 0
     
-    def addNode(self, node):
+    def add_node(self, node):
         print("add node")
         # We have added a node, so we want to find out which face it is in and connect it with edges
         for f in self._faces:
-            if self.inFace(f.node1, f.node2, f.node3, node):
+            if self.is_in_face(f.node1, f.node2, f.node3, node):
                 [
                     face1, face2, face3,
                     edge1_1, edge1_2, edge2_1, edge2_2, edge3_1, edge3_2,
                     edge1, edge2, edge3
-                ] = GraphLogic.addNode(f, node)
+                ] = GraphLogic.add_node(f, node)
                 
                 self._faces.append(face1)
                 self._faces.append(face2)
@@ -115,14 +118,14 @@ class Graph:
                 
                 # We want to check whether or not the edges are valid delaunay, we will do that by comparing
                 # the new node with the 3 triangle nodes of the adjacent face.
-                edgeFlipChecks = [edge1, edge2, edge3]
-                self.checkFlipEdge(edgeFlipChecks, node)
+                edge_flip_checks = [edge1, edge2, edge3]
+                self.check_flip_edge(edge_flip_checks, node)
         
         self.nodes.append(node)
-        self.calculateVoronoi()
+        self.calculate_voronoi()
     
     def orientation(self, p1, p2, p3):
         return (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)
     
-    def calculateVoronoi(self):
-        print("calculateVoronoi")
+    def calculate_voronoi(self):
+        print("calculate_voronoi")

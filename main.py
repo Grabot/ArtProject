@@ -1,9 +1,10 @@
-import os
+from os.path import abspath, dirname, join
 
 from PIL import Image
 from pyglet import clock
 from pyglet import window
-from pyglet.gl import *  # TODO
+from pyglet.gl import glColor4f, gl, GL_POLYGON, GL_QUADS, GL_LINES
+from pyglet.graphics import draw
 
 from objects.face import Face
 from objects.graph import Graph
@@ -27,16 +28,16 @@ class MainWindow(window.Window):
         
         face1 = Face(node1, node2, node3)
         
-        halfEdge1 = HalfEdge(node1, face1)
-        halfEdge2 = HalfEdge(node2, face1)
-        halfEdge3 = HalfEdge(node3, face1)
+        half_edge1 = HalfEdge(node1, face1)
+        half_edge2 = HalfEdge(node2, face1)
+        half_edge3 = HalfEdge(node3, face1)
         
         # It is possible that there isn't a adjacent Edge. This is the case for the outer edges.
-        halfEdge1.next_edge = halfEdge2
-        halfEdge2.next_edge = halfEdge3
-        halfEdge3.next_edge = halfEdge1
+        half_edge1.next_edge = half_edge2
+        half_edge2.next_edge = half_edge3
+        half_edge3.next_edge = half_edge1
         
-        face1.edge = halfEdge1
+        face1.edge = half_edge1
         
         nodes = []
         nodes.append(node1)
@@ -44,22 +45,22 @@ class MainWindow(window.Window):
         nodes.append(node3)
         faces = []
         faces.append(face1)
-        halfEdges = []
-        halfEdges.append(halfEdge1)
-        halfEdges.append(halfEdge2)
-        halfEdges.append(halfEdge3)
+        half_edges = []
+        half_edges.append(half_edge1)
+        half_edges.append(half_edge2)
+        half_edges.append(half_edge3)
         
         # We will select a sorta random edge that is not on the outside.
-        self.theEdgeToShow = halfEdges[2]
+        self.the_edge_to_show = half_edges[2]
         self.show_face = False
-        self.showAllFaces = False
-        self.showVoronoiFaces = False
-        self.showNextEdge = False
-        self.getAdjacentEdge = False
-        self.flipEdge = False
+        self.show_all_faces = False
+        self.show_voronoi_faces = False
+        self.show_next_edge = False
+        self.should_get_adjacent_edge = False
+        self.flip_edge = False
         self.amountOfNodes = 200
         
-        self.graph = Graph(nodes, halfEdges, faces)
+        self.graph = Graph(nodes, half_edges, faces)
     
     def main_loop(self):
         clock.set_fps_limit(30)
@@ -75,27 +76,27 @@ class MainWindow(window.Window):
                 nodeX = 737
                 nodeY = 702
                 nodeNew = Node(nodeX, nodeY)
-                self.graph.addNode(nodeNew)
+                self.graph.add_node(nodeNew)
             
             if timer == 50:
                 nodeX = 190
                 nodeY = 210
                 nodeNew = Node(nodeX, nodeY)
-                self.graph.addNode(nodeNew)
+                self.graph.add_node(nodeNew)
             
-            if self.showNextEdge:
-                self.showNextEdge = False
-                self.theEdgeToShow = self.theEdgeToShow.next_edge
-            if self.getAdjacentEdge:
-                self.getAdjacentEdge = False
-                if self.theEdgeToShow.adjacent_edge is not None:
-                    self.theEdgeToShow = self.theEdgeToShow.adjacent_edge
+            if self.show_next_edge:
+                self.show_next_edge = False
+                self.the_edge_to_show = self.the_edge_to_show.next_edge
+            if self.should_get_adjacent_edge:
+                self.should_get_adjacent_edge = False
+                if self.the_edge_to_show.adjacent_edge is not None:
+                    self.the_edge_to_show = self.the_edge_to_show.adjacent_edge
             
-            if self.flipEdge:
-                temp = self.graph.manuallyFlipEdge(self.theEdgeToShow)
+            if self.flip_edge:
+                temp = self.graph.manually_flip_edge(self.the_edge_to_show)
                 if temp != None:
-                    self.theEdgeToShow = temp
-                self.flipEdge = False
+                    self.the_edge_to_show = temp
+                self.flip_edge = False
                 print("flipping edge :)")
             
             # White, so reset the colour
@@ -107,7 +108,7 @@ class MainWindow(window.Window):
             gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
             # Draw the nodes with how you can give it a colour
             
-            if self.showAllFaces:
+            if self.show_all_faces:
                 
                 for f in self.graph.get_faces():
                     colour = f.colour
@@ -115,17 +116,17 @@ class MainWindow(window.Window):
                     n1 = f.node1
                     n2 = f.node2
                     n3 = f.node3
-                    pyglet.graphics.draw(3, GL_POLYGON,
+                    draw(3, GL_POLYGON,
                                          ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
             
-            if self.showVoronoiFaces:
+            if self.show_voronoi_faces:
                 print("show Voronoi faces")
             
             glColor4f(1, 0, 0, 1.0)
             for n in self.graph.nodes:
                 nodeX = n.x
                 nodeY = n.y
-                pyglet.graphics.draw(4, GL_QUADS, ('v2f', [
+                draw(4, GL_QUADS, ('v2f', [
                     nodeX - nodeSize, nodeY - nodeSize,
                     nodeX - nodeSize, nodeY + nodeSize,
                     nodeX + nodeSize, nodeY + nodeSize,
@@ -139,31 +140,31 @@ class MainWindow(window.Window):
                 if adjacentEdge != None:
                     nodeFrom = e.adjacent_edge.node
                     nodeTo = e.node
-                    pyglet.graphics.draw(4, GL_LINES, (
+                    draw(4, GL_LINES, (
                         'v2f', (0, 0, 0, height, nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y)))
             
             if self.showEdge:
                 # Some visual debugging, show the edge as thicker and blue and draw the face.
                 gl.glLineWidth(5)
                 glColor4f(0, 0, 1, 1.0)
-                adjacentEdge = self.theEdgeToShow.adjacent_edge
+                adjacentEdge = self.the_edge_to_show.adjacent_edge
                 if adjacentEdge != None:
-                    nodeFrom = self.theEdgeToShow.adjacent_edge.node
-                    nodeTo = self.theEdgeToShow.node
+                    nodeFrom = self.the_edge_to_show.adjacent_edge.node
+                    nodeTo = self.the_edge_to_show.node
                     # print("edge name is " + self.showEdge)
-                    pyglet.graphics.draw(4, GL_LINES, (
+                    draw(4, GL_LINES, (
                         'v2f', (0, 0, 0, height, nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y)))
                 
                 if self.show_face:
-                    current_face = self.theEdgeToShow.face
+                    current_face = self.the_edge_to_show.face
                     n1 = current_face.node1
                     n2 = current_face.node2
                     n3 = current_face.node3
-                    pyglet.graphics.draw(3, GL_POLYGON,
+                    draw(3, GL_POLYGON,
                                          ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
             
             # Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
-            # pyglet.graphics.draw(8, GL_POLYGON, ('v2f', [300,300, 300,400, 400,500, 500,500, 600,400, 600,300, 500,200, 400,200]))
+            # draw(8, GL_POLYGON, ('v2f', [300,300, 300,400, 400,500, 500,500, 600,400, 600,300, 500,200, 400,200]))
             
             glColor4f(0, 0, 0, 1.0)
             clock.tick()
@@ -185,7 +186,7 @@ class MainWindow(window.Window):
     def on_mouse_release(self, x, y, button, modifiers):
         print("node added at x:", x, "y:", y)
         nodeNew = Node(x, y)
-        self.graph.addNode(nodeNew)
+        self.graph.add_node(nodeNew)
     
     def on_key_press(self, symbol, modifiers):
         print("symbol", str(symbol))
@@ -201,35 +202,35 @@ class MainWindow(window.Window):
         elif symbol == 118:
             self.showEdge = False
         elif symbol == 110:
-            self.showNextEdge = True
+            self.show_next_edge = True
         elif symbol == 102:
             self.show_face = True
         elif symbol == 103:
             self.show_face = False
         elif symbol == 116:
-            self.getAdjacentEdge = True
+            self.should_get_adjacent_edge = True
         elif symbol == 112:
-            self.flipEdge = True
+            self.flip_edge = True
         elif symbol == 122:
-            self.showAllFaces = True
+            self.show_all_faces = True
         elif symbol == 120:
-            self.showAllFaces = False
+            self.show_all_faces = False
         elif symbol == 119:
-            self.showVoronoiFaces = True
+            self.show_voronoi_faces = True
         elif symbol == 101:
-            self.showVoronoiFaces = False
+            self.show_voronoi_faces = False
     
     def on_key_release(self, symbol, modifiers):
         pass
 
 
 if __name__ == "__main__":
-    imageName = "Oudegracht_Utrecht_2.png"
-    imagePath = os.path.abspath(os.path.dirname(__file__))
-    imagePath = os.path.join(imagePath, 'data')
-    imagePath = os.path.join(imagePath, imageName)
-    im = Image.open(imagePath)
+    image_name = "Oudegracht_Utrecht_2.png"
+    image_path = abspath(dirname(__file__))
+    image_path = join(image_path, 'data')
+    image_path = join(image_path, image_name)
+    im = Image.open(image_path)
     (width, height) = im.size
     
-    window = MainWindow(width, height, imageName, "Voronoi art project")
+    window = MainWindow(width, height, image_name, "Voronoi art project")
     window.main_loop()
