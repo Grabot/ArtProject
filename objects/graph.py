@@ -17,9 +17,9 @@ class Graph:
     
     def flip_edge(self, e):
         # First a simple check if we can flip the edge.
-        if e.getAdjacentEdge() == None:
+        if e.adjacent_edge == None:
             return
-        [e1, e2, newFace1, newFace2, e1_1, e2_1] = GraphLogic.flipEdge(e)
+        [e1, e2, new_face1, new_face2, e1_1, e2_1] = GraphLogic.flip_edge(e)
         
         # Add the new faces and also remove the old ones.
         self.edges.remove(e1)
@@ -28,8 +28,8 @@ class Graph:
         self._faces.remove(e1.face)
         self._faces.remove(e2.face)
         
-        self._faces.append(newFace1)
-        self._faces.append(newFace2)
+        self._faces.append(new_face1)
+        self._faces.append(new_face2)
         
         # Do the same with the new edges.
         self.edges.append(e1_1)
@@ -46,10 +46,10 @@ class Graph:
     def inCircle(self, A, B, C, D):
         # returns True is D lies in the circumcircle of ABC
         # This is done by determining the determinant of a matrix.
-        M = [[A.getX(), A.getY(), (pow(A.getX(), 2) + pow(A.getY(), 2)), 1],
-             [B.getX(), B.getY(), (pow(B.getX(), 2) + pow(B.getY(), 2)), 1],
-             [C.getX(), C.getY(), (pow(C.getX(), 2) + pow(C.getY(), 2)), 1],
-             [D.getX(), D.getY(), (pow(D.getX(), 2) + pow(D.getY(), 2)), 1]]
+        M = [[A.x, A.y, (pow(A.x, 2) + pow(A.y, 2)), 1],
+             [B.x, B.y, (pow(B.x, 2) + pow(B.y, 2)), 1],
+             [C.x, C.y, (pow(C.x, 2) + pow(C.y, 2)), 1],
+             [D.x, D.y, (pow(D.x, 2) + pow(D.y, 2)), 1]]
         return numpy.linalg.det(M) > 0
     
     def validEdge(self, triangleNode1, triangleNode2, triangleNode3, node):
@@ -63,27 +63,27 @@ class Graph:
             
             # It is possible that the edge has since been removed.
             if edge in self.edges:
-                if edge.getAdjacentEdge() != None:
-                    adjacentEdge = edge.getAdjacentEdge()
+                if edge.adjacent_edge != None:
+                    adjacentEdge = edge.adjacent_edge
                     otherFaceNode1 = adjacentEdge.node
-                    otherFaceNode2 = adjacentEdge.getNextEdge().node
-                    otherFaceNode3 = adjacentEdge.getNextEdge().getNextEdge().node
+                    otherFaceNode2 = adjacentEdge.next_edge.node
+                    otherFaceNode3 = adjacentEdge.next_edge.next_edge.node
                     if not self.validEdge(otherFaceNode1, otherFaceNode2, otherFaceNode3, node):
                         print("edge is not valid, flip it!")
                         [e1_1, e2_1] = self.flip_edge(edge)
-                        flipEdges.append(e1_1.getNextEdge())
-                        flipEdges.append(e1_1.getNextEdge().getNextEdge())
-                        flipEdges.append(e2_1.getNextEdge())
-                        flipEdges.append(e2_1.getNextEdge().getNextEdge())
+                        flipEdges.append(e1_1.next_edge)
+                        flipEdges.append(e1_1.next_edge.next_edge)
+                        flipEdges.append(e2_1.next_edge)
+                        flipEdges.append(e2_1.next_edge.next_edge)
     
     def inFace(self, p0, p1, p2, node):
-        Area = 0.5 * (-p1.getY() * p2.getX() + p0.getY() * (-p1.getX() + p2.getX()) + p0.getX() * (
-                p1.getY() - p2.getY()) + p1.getX() * p2.getY())
+        Area = 0.5 * (-p1.y * p2.x + p0.y * (-p1.x + p2.x) + p0.x * (
+                p1.y - p2.y) + p1.x * p2.y)
         
-        s = 1 / (2 * Area) * (p0.getY() * p2.getX() - p0.getX() * p2.getY() + (p2.getY() - p0.getY()) * node.getX() + (
-                p0.getX() - p2.getX()) * node.getY())
-        t = 1 / (2 * Area) * (p0.getX() * p1.getY() - p0.getY() * p1.getX() + (p0.getY() - p1.getY()) * node.getX() + (
-                p1.getX() - p0.getX()) * node.getY())
+        s = 1 / (2 * Area) * (p0.y * p2.x - p0.x * p2.y + (p2.y - p0.y) * node.x + (
+                p0.x - p2.x) * node.y)
+        t = 1 / (2 * Area) * (p0.x * p1.y - p0.y * p1.x + (p0.y - p1.y) * node.x + (
+                p1.x - p0.x) * node.y)
         
         return s > 0 and t > 0 and 1 - s - t > 0
     
@@ -122,7 +122,7 @@ class Graph:
         self.calculateVoronoi()
     
     def orientation(self, p1, p2, p3):
-        return (p2.getX() - p1.getX()) * (p3.getY() - p1.getY()) - (p3.getX() - p1.getX()) * (p2.getY() - p1.getY())
+        return (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)
     
     def calculateVoronoi(self):
         print("calculateVoronoi")

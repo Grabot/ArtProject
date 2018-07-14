@@ -32,9 +32,9 @@ class MainWindow(window.Window):
         halfEdge3 = HalfEdge(node3, face1)
         
         # It is possible that there isn't a adjacent Edge. This is the case for the outer edges.
-        halfEdge1.setNextEdge(halfEdge2)
-        halfEdge2.setNextEdge(halfEdge3)
-        halfEdge3.setNextEdge(halfEdge1)
+        halfEdge1.next_edge = halfEdge2
+        halfEdge2.next_edge = halfEdge3
+        halfEdge3.next_edge = halfEdge1
         
         face1.edge = halfEdge1
         
@@ -85,11 +85,11 @@ class MainWindow(window.Window):
             
             if self.showNextEdge:
                 self.showNextEdge = False
-                self.theEdgeToShow = self.theEdgeToShow.getNextEdge()
+                self.theEdgeToShow = self.theEdgeToShow.next_edge
             if self.getAdjacentEdge:
                 self.getAdjacentEdge = False
-                if self.theEdgeToShow.getAdjacentEdge() is not None:
-                    self.theEdgeToShow = self.theEdgeToShow.getAdjacentEdge()
+                if self.theEdgeToShow.adjacent_edge is not None:
+                    self.theEdgeToShow = self.theEdgeToShow.adjacent_edge
             
             if self.flipEdge:
                 temp = self.graph.manuallyFlipEdge(self.theEdgeToShow)
@@ -116,7 +116,7 @@ class MainWindow(window.Window):
                     n2 = f.node2
                     n3 = f.node3
                     pyglet.graphics.draw(3, GL_POLYGON,
-                                         ('v2f', [n1.getX(), n1.getY(), n2.getX(), n2.getY(), n3.getX(), n3.getY()]))
+                                         ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
             
             if self.showVoronoiFaces:
                 print("show Voronoi faces")
@@ -134,25 +134,25 @@ class MainWindow(window.Window):
             # draw the edges using the half edge data structure
             glColor4f(0, 1, 0, 1.0)
             for e in self.graph.edges:
-                adjacentEdge = e.getAdjacentEdge()
+                adjacentEdge = e.adjacent_edge
                 # It is possible that there is no adjacent edge, this is the case for the outer edges, we don't need to draw them.
                 if adjacentEdge != None:
-                    nodeFrom = e.getAdjacentEdge().node
+                    nodeFrom = e.adjacent_edge.node
                     nodeTo = e.node
                     pyglet.graphics.draw(4, GL_LINES, (
-                        'v2f', (0, 0, 0, height, nodeFrom.getX(), nodeFrom.getY(), nodeTo.getX(), nodeTo.getY())))
+                        'v2f', (0, 0, 0, height, nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y)))
             
             if self.showEdge:
                 # Some visual debugging, show the edge as thicker and blue and draw the face.
                 gl.glLineWidth(5)
                 glColor4f(0, 0, 1, 1.0)
-                adjacentEdge = self.theEdgeToShow.getAdjacentEdge()
+                adjacentEdge = self.theEdgeToShow.adjacent_edge
                 if adjacentEdge != None:
-                    nodeFrom = self.theEdgeToShow.getAdjacentEdge().node
+                    nodeFrom = self.theEdgeToShow.adjacent_edge.node
                     nodeTo = self.theEdgeToShow.node
                     # print("edge name is " + self.showEdge)
                     pyglet.graphics.draw(4, GL_LINES, (
-                        'v2f', (0, 0, 0, height, nodeFrom.getX(), nodeFrom.getY(), nodeTo.getX(), nodeTo.getY())))
+                        'v2f', (0, 0, 0, height, nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y)))
                 
                 if self.show_face:
                     current_face = self.theEdgeToShow.face
@@ -160,7 +160,7 @@ class MainWindow(window.Window):
                     n2 = current_face.node2
                     n3 = current_face.node3
                     pyglet.graphics.draw(3, GL_POLYGON,
-                                         ('v2f', [n1.getX(), n1.getY(), n2.getX(), n2.getY(), n3.getX(), n3.getY()]))
+                                         ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
             
             # Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
             # pyglet.graphics.draw(8, GL_POLYGON, ('v2f', [300,300, 300,400, 400,500, 500,500, 600,400, 600,300, 500,200, 400,200]))
