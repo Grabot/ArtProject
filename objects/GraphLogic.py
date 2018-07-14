@@ -2,7 +2,6 @@ import objects.HalfEdge as HalfEdge
 import objects.Face as Face
 
 def addNode(f, node):
-    print("Hello World")
     # The 3 edges of the face that is chosen.
     edge1 = f.getEdge()
     edge2 = edge1.getNextEdge()
