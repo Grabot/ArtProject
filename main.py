@@ -16,7 +16,7 @@ from voronoi_image import VoronoiImage
 class MainWindow(window.Window):
     def __init__(self, width, height, image_name, name):
         window.Window.__init__(self, width, height, name)
-        self.showEdge = False
+        self.show_edge = False
         self.width = width
         self.height = height
         self.voronoi_image = VoronoiImage(image_name)
@@ -72,17 +72,6 @@ class MainWindow(window.Window):
             self.clear()
             
             timer += 1
-            if timer == 20:
-                nodeX = 737
-                nodeY = 702
-                nodeNew = Node(nodeX, nodeY)
-                self.graph.add_node(nodeNew)
-            
-            if timer == 50:
-                nodeX = 190
-                nodeY = 210
-                nodeNew = Node(nodeX, nodeY)
-                self.graph.add_node(nodeNew)
             
             if self.show_next_edge:
                 self.show_next_edge = False
@@ -143,7 +132,7 @@ class MainWindow(window.Window):
                     draw(4, GL_LINES, (
                         'v2f', (0, 0, 0, height, nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y)))
             
-            if self.showEdge:
+            if self.show_edge:
                 # Some visual debugging, show the edge as thicker and blue and draw the face.
                 gl.glLineWidth(5)
                 glColor4f(0, 0, 1, 1.0)
@@ -197,27 +186,27 @@ class MainWindow(window.Window):
         elif symbol == 65307:
             # escape key is pressed
             exit()
-        elif symbol == 98:
-            self.showEdge = True
-        elif symbol == 118:
-            self.showEdge = False
-        elif symbol == 110:
+        elif symbol == 98:   # b
+            self.show_edge = True
+        elif symbol == 118:  # v
+            self.show_edge = False
+        elif symbol == 110:  # n
             self.show_next_edge = True
-        elif symbol == 102:
+        elif symbol == 102:  # f
             self.show_face = True
-        elif symbol == 103:
+        elif symbol == 103:  # g
             self.show_face = False
-        elif symbol == 116:
+        elif symbol == 116:  # t
             self.should_get_adjacent_edge = True
-        elif symbol == 112:
+        elif symbol == 112:  # p
             self.flip_edge = True
-        elif symbol == 122:
+        elif symbol == 122:  # z
             self.show_all_faces = True
-        elif symbol == 120:
+        elif symbol == 120:  # x
             self.show_all_faces = False
-        elif symbol == 119:
+        elif symbol == 119:  # w
             self.show_voronoi_faces = True
-        elif symbol == 101:
+        elif symbol == 101:  # e
             self.show_voronoi_faces = False
     
     def on_key_release(self, symbol, modifiers):
