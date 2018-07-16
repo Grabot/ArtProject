@@ -11,7 +11,7 @@ from objects.graph import Graph
 from objects.half_edge import HalfEdge
 from objects.node import Node
 from voronoi_image import VoronoiImage
-
+from random import randint
 
 class MainWindow(window.Window):
     def __init__(self, width, height, image_name, name):
@@ -20,8 +20,7 @@ class MainWindow(window.Window):
         self.width = width
         self.height = height
         self.voronoi_image = VoronoiImage(image_name)
-        
-        # Mannually add 4 nodes with triangulation edges far outside the sight to make it easy to make the delaunay and voronoi calculations.
+
         node1 = Node(-9999999, -9999999)
         node2 = Node(9999999, -9999999)
         node3 = Node(0, 9999999)
@@ -72,7 +71,26 @@ class MainWindow(window.Window):
             self.clear()
             
             timer += 1
-            
+
+            if timer == 20:
+                # x = randint(0, width)
+                # y = randint(0, height)
+                x = 374
+                y = 380
+                self.addNode(x, y)
+            if timer == 40:
+                # x = randint(0, width)
+                # y = randint(0, height)
+                x = 786
+                y = 545
+                self.addNode(x, y)
+            if timer == 60:
+                # x = randint(0, width)
+                # y = randint(0, height)
+                x = 919
+                y = 338
+                self.addNode(x, y)
+
             if self.show_next_edge:
                 self.show_next_edge = False
                 self.the_edge_to_show = self.the_edge_to_show.next_edge
@@ -173,10 +191,13 @@ class MainWindow(window.Window):
         pass
     
     def on_mouse_release(self, x, y, button, modifiers):
+        self.addNode(x, y)
+
+    def addNode(self, x, y):
         print("node added at x:", x, "y:", y)
         nodeNew = Node(x, y)
         self.graph.add_node(nodeNew)
-    
+
     def on_key_press(self, symbol, modifiers):
         print("symbol", str(symbol))
         if symbol == 97:
