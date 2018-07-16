@@ -84,7 +84,7 @@ class MainWindow(window.Window):
                 x = 786
                 y = 545
                 self.addNode(x, y)
-            if timer == 60:
+            if timer == 50:
                 # x = randint(0, width)
                 # y = randint(0, height)
                 x = 919

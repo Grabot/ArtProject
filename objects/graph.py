@@ -1,7 +1,7 @@
 from random import shuffle
 
 import numpy
-
+import time
 import objects.graph_logic as GraphLogic
 
 
@@ -74,10 +74,10 @@ class Graph:
                     if not self.is_valid_edge(otherFaceNode1, otherFaceNode2, otherFaceNode3, node):
                         print("edge is not valid, flip it!")
                         [e1_1, e2_1] = self.flip_edge(edge)
-                        flip_edges.append(e1_1.next_edge)
-                        flip_edges.append(e1_1.next_edge.next_edge)
-                        flip_edges.append(e2_1.next_edge)
-                        flip_edges.append(e2_1.next_edge.next_edge)
+                        # flip_edges.append(e1_1.next_edge)
+                        # flip_edges.append(e1_1.next_edge.next_edge)
+                        # flip_edges.append(e2_1.next_edge)
+                        # flip_edges.append(e2_1.next_edge.next_edge)
     
     def is_in_face(self, p0, p1, p2, node):
         Area = 0.5 * (-p1.y * p2.x + p0.y * (-p1.x + p2.x) + p0.x * (
