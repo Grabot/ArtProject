@@ -3,7 +3,6 @@ from objects.half_edge import HalfEdge
 
 
 def add_node(face, node):
-    print("Hello World")
     # The 3 edges of the face that is chosen.
     edge1 = face.edge
     edge2 = edge1.next_edge

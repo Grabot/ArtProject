@@ -181,7 +181,6 @@ class MainWindow(window.Window):
         print("symbol", str(symbol))
         if symbol == 97:
             # key press A
-            print("a pressed")
             pressedA = True
         elif symbol == 65307:
             # escape key is pressed
