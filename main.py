@@ -98,7 +98,7 @@ class MainWindow(window.Window):
                 x = 564
                 y = 370
                 self.addNode(x, y)
-            if timer == 50:
+            if timer == 40:
                 # x = randint(0, width)
                 # y = randint(0, height)
                 x = 734
@@ -110,10 +110,10 @@ class MainWindow(window.Window):
                 x = 468
                 y = 644
                 self.addNode(x, y)
-            # if timer == 80:
-            #     x = randint(0, width)
-            #     y = randint(0, height)
-            #     self.addNode(x, y)
+            if timer == 120:
+                x = 481
+                y = 671
+                self.addNode(x, y)
 
             if self.show_next_edge:
                 self.show_next_edge = False
