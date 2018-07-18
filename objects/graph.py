@@ -74,10 +74,15 @@ class Graph:
                     if not self.is_valid_edge(otherFaceNode1, otherFaceNode2, otherFaceNode3, node):
                         print("edge is not valid, flip it!")
                         [e1_1, e2_1] = self.flip_edge(edge)
-                        # flip_edges.append(e1_1.next_edge)
-                        # flip_edges.append(e1_1.next_edge.next_edge)
-                        # flip_edges.append(e2_1.next_edge)
-                        # flip_edges.append(e2_1.next_edge.next_edge)
+                        # check the other edges now, except if it is an outer edge
+                        if not (abs(e1_1.next_edge.node.y) == 99999):
+                            flip_edges.append(e1_1.next_edge)
+                        if not (abs(e1_1.next_edge.next_edge.node.y) == 99999):
+                            flip_edges.append(e1_1.next_edge.next_edge)
+                        if not (abs(e2_1.next_edge.node.y) == 99999):
+                            flip_edges.append(e2_1.next_edge)
+                        if not (abs(e2_1.next_edge.next_edge.node.y) == 99999):
+                            flip_edges.append(e2_1.next_edge.next_edge)
     
     def is_in_face(self, p0, p1, p2, node):
         Area = 0.5 * (-p1.y * p2.x + p0.y * (-p1.x + p2.x) + p0.x * (
@@ -116,7 +121,7 @@ class Graph:
                 # The original face is now replaced with 3 new ones, so we will remove the original
                 self._faces.remove(f)
                 
-                # We want to check whether or not the edges are valid delaunay, we will do that by comparing
+                # We want to check whether or not the edges are valid Delaunay, we will do that by comparing
                 # the new node with the 3 triangle nodes of the adjacent face.
                 edge_flip_checks = [edge1, edge2, edge3]
                 self.check_flip_edge(edge_flip_checks, node)
