@@ -113,7 +113,7 @@ class MainWindow(window.Window):
                 x = 468
                 y = 644
                 self.addNode(x, y)
-            if timer == 420:
+            if timer == 80:
                 x = 481
                 y = 671
                 self.addNode(x, y)
@@ -233,8 +233,7 @@ class MainWindow(window.Window):
         pass
     
     def on_mouse_release(self, x, y, button, modifiers):
-        self.check_face_function(x, y)
-        # self.addNode(x, y)
+        self.addNode(x, y)
 
     def addNode(self, x, y):
         print("node added at x:", x, "y:", y)
