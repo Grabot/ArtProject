@@ -54,7 +54,9 @@ class Graph:
              [B.x, B.y, (pow(B.x, 2) + pow(B.y, 2)), 1],
              [C.x, C.y, (pow(C.x, 2) + pow(C.y, 2)), 1],
              [D.x, D.y, (pow(D.x, 2) + pow(D.y, 2)), 1]]
-        return numpy.linalg.det(M) > 0
+        det_result = numpy.linalg.det(M)
+        print("determinant:", det_result)
+        return det_result > 0
     
     def is_valid_edge(self, triangleNode1, triangleNode2, triangleNode3, node):
         return not self.is_in_circle(triangleNode1, triangleNode2, triangleNode3, node)
@@ -84,14 +86,14 @@ class Graph:
                         if not (abs(e2_1.next_edge.next_edge.node.y) == 99999):
                             flip_edges.append(e2_1.next_edge.next_edge)
     
-    def is_in_face(self, p0, p1, p2, node):
-        Area = 0.5 * (-p1.y * p2.x + p0.y * (-p1.x + p2.x) + p0.x * (
-                p1.y - p2.y) + p1.x * p2.y)
+    def is_in_face(self, p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, node_x, node_y):
+        Area = 0.5 * (-p1_y * p2_x + p0_y * (-p1_x + p2_x) + p0_x * (
+                p1_y - p2_y) + p1_x * p2_y)
         
-        s = 1 / (2 * Area) * (p0.y * p2.x - p0.x * p2.y + (p2.y - p0.y) * node.x + (
-                p0.x - p2.x) * node.y)
-        t = 1 / (2 * Area) * (p0.x * p1.y - p0.y * p1.x + (p0.y - p1.y) * node.x + (
-                p1.x - p0.x) * node.y)
+        s = 1 / (2 * Area) * (p0_y * p2_x - p0_x * p2_y + (p2_y - p0_y) * node_x + (
+                p0_x - p2_x) * node_y)
+        t = 1 / (2 * Area) * (p0_x * p1_y - p0_y * p1_x + (p0_y - p1_y) * node_x + (
+                p1_x - p0_x) * node_y)
         
         return s > 0 and t > 0 and 1 - s - t > 0
     
@@ -99,7 +101,7 @@ class Graph:
         print("add node")
         # We have added a node, so we want to find out which face it is in and connect it with edges
         for f in self._faces:
-            if self.is_in_face(f.node1, f.node2, f.node3, node):
+            if self.is_in_face(f.node1.x, f.node1.y, f.node2.x, f.node2.y, f.node3.x, f.node3.y, node.x, node.y):
                 [
                     face1, face2, face3,
                     edge1_1, edge1_2, edge2_1, edge2_2, edge3_1, edge3_2,
@@ -134,3 +136,8 @@ class Graph:
     
     def calculate_voronoi(self):
         print("calculate_voronoi")
+
+    def find_check_face(self, x, y):
+        for f in self._faces:
+            if self.is_in_face(f.node1.x, f.node1.y, f.node2.x, f.node2.y, f.node3.x, f.node3.y, x, y):
+                return f

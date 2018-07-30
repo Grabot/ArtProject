@@ -78,8 +78,11 @@ class MainWindow(window.Window):
         self.should_get_adjacent_edge = False
         self.flip_edge = False
         self.amountOfNodes = 200
+        self.show_test_face = False
         
         self.graph = Graph(nodes, half_edges, faces)
+
+        self.check_face = self.graph.find_check_face(0, 0)
     
     def main_loop(self):
         clock.set_fps_limit(30)
@@ -110,7 +113,7 @@ class MainWindow(window.Window):
                 x = 468
                 y = 644
                 self.addNode(x, y)
-            if timer == 120:
+            if timer == 420:
                 x = 481
                 y = 671
                 self.addNode(x, y)
@@ -193,7 +196,18 @@ class MainWindow(window.Window):
                     n3 = current_face.node3
                     draw(3, GL_POLYGON,
                                          ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
-            
+
+
+            # draw the clicked face (for testing if the face finder is correct)
+            if self.show_test_face:
+                glColor4f(0, 0, 0, 1.0)
+                n1 = self.check_face.node1
+                n2 = self.check_face.node2
+                n3 = self.check_face.node3
+                draw(3, GL_POLYGON,
+                     ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
+
+
             # Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
             # draw(8, GL_POLYGON, ('v2f', [300,300, 300,400, 400,500, 500,500, 600,400, 600,300, 500,200, 400,200]))
             
@@ -203,7 +217,11 @@ class MainWindow(window.Window):
     
     def draw(self):
         self.voronoi_image.draw()
-    
+
+    def check_face_function(self, x, y):
+        print("check face")
+        self.check_face = self.graph.find_check_face(x, y)
+
     # Event handlers
     def on_mouse_motion(self, x, y, dx, dy):
         pass
@@ -215,7 +233,8 @@ class MainWindow(window.Window):
         pass
     
     def on_mouse_release(self, x, y, button, modifiers):
-        self.addNode(x, y)
+        self.check_face_function(x, y)
+        # self.addNode(x, y)
 
     def addNode(self, x, y):
         print("node added at x:", x, "y:", y)
@@ -252,6 +271,8 @@ class MainWindow(window.Window):
             self.show_voronoi_faces = True
         elif symbol == 101:  # e
             self.show_voronoi_faces = False
+        elif symbol == 113:  # qz
+            self.show_test_face = True
     
     def on_key_release(self, symbol, modifiers):
         pass
