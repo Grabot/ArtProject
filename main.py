@@ -101,20 +101,19 @@ class MainWindow(window.Window):
             #     y = randint(0, height)
             #     self.addNode(x, y)
 
+            if timer == 10:
+                x = 279
+                y = 231
+                self.addNode(x, y)
             if timer == 20:
-                # x = randint(0, width)
-                # y = randint(0, height)
-                x = 582
-                y = 441
+                x = 249
+                y = 123
                 self.addNode(x, y)
-            if timer == 40:
-                x = 465
-                y = 366
+            if timer == 30:
+                x = 172
+                y = 192
                 self.addNode(x, y)
-            if timer == 150:
-                x = 391
-                y = 322
-                self.addNode(x, y)
+
 
             if self.show_next_edge:
                 self.show_next_edge = False
