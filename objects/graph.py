@@ -60,8 +60,6 @@ class Graph:
 
     def flip_edge(self, e):
         # First a simple check if we can flip the edge.
-        if e.adjacent_edge == None:
-            return
         [e1, e2, new_face1, new_face2, e1_1, e2_1] = GraphLogic.flip_edge(e)
         
         # Add the new faces and also remove the old ones.
@@ -165,7 +163,7 @@ class Graph:
                 
                 # We want to check whether or not the edges are valid Delaunay, we will do that by comparing
                 # the new node with the 3 triangle nodes of the adjacent face.
-                edge_flip_checks = [edge1, edge2, edge3]
+                edge_flip_checks = [edge1, edge2, edge3, edge1_1, edge1_2, edge2_1, edge2_2, edge3_1, edge3_2]
                 self.check_flip_edge(edge_flip_checks, node)
         
         self.nodes.append(node)
@@ -181,3 +179,30 @@ class Graph:
         for f in self._faces:
             if self.is_in_face(f.node1.x, f.node1.y, f.node2.x, f.node2.y, f.node3.x, f.node3.y, x, y):
                 return f
+
+    def test_edge(self, the_edge):
+        # It is possible that the edge has since been removed.
+        if the_edge in self.edges:
+            if the_edge.adjacent_edge != None:
+                adjacentEdge = the_edge.adjacent_edge
+
+                # My guess is that the problem is that the points are not correctly ordered.
+                # We want it to not have crossing lines, we made a simple test based on lines crossing
+                # https://stackoverflow.com/questions/3838329/how-can-i-check-if-two-segments-intersect#9997374
+                A = adjacentEdge.node
+                B = adjacentEdge.next_edge.node
+                C = adjacentEdge.next_edge.next_edge.node
+
+                D = the_edge.next_edge.node
+
+                print("Ax:", A.x, "Ay:", A.y)
+                print("Bx:", B.x, "By:", B.y)
+                print("Cx:", C.x, "Cy:", C.y)
+                print("Dx:", D.x, "Dy:", D.y)
+
+                # Check the determinant of the point compared to the triangle
+                if not self.is_valid_edge(A, B, C, D):
+                    # Check if we can flip the edge
+                    if self.check_can_flip_edge(the_edge):
+                        return True
+        return False

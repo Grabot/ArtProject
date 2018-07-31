@@ -79,6 +79,7 @@ class MainWindow(window.Window):
         self.flip_edge = False
         self.amountOfNodes = 200
         self.show_test_face = False
+        self.test_selected_edge = False
         
         self.graph = Graph(nodes, half_edges, faces)
 
@@ -103,26 +104,14 @@ class MainWindow(window.Window):
             if timer == 20:
                 # x = randint(0, width)
                 # y = randint(0, height)
-                x = 606
-                y = 325
-                self.addNode(x, y)
-            if timer == 40:
-                # x = randint(0, width)
-                # y = randint(0, height)
-                x = 486
-                y = 225
-                self.addNode(x, y)
-            if timer == 60:
-                # x = randint(0, width)
-                # y = randint(0, height)
                 x = 582
                 y = 441
                 self.addNode(x, y)
-            if timer == 80:
+            if timer == 40:
                 x = 465
                 y = 366
                 self.addNode(x, y)
-            if timer == 100:
+            if timer == 150:
                 x = 391
                 y = 322
                 self.addNode(x, y)
@@ -205,6 +194,9 @@ class MainWindow(window.Window):
                     n3 = current_face.node3
                     draw(3, GL_POLYGON,
                                          ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
+                if self.test_selected_edge:
+                    self.test_selected_edge = False
+                    print("test the edge:", self.graph.test_edge(self.the_edge_to_show))
 
 
             # draw the clicked face (for testing if the face finder is correct)
@@ -279,8 +271,10 @@ class MainWindow(window.Window):
             self.show_voronoi_faces = True
         elif symbol == 101:  # e
             self.show_voronoi_faces = False
-        elif symbol == 113:  # qz
+        elif symbol == 113:  # q
             self.show_test_face = True
+        elif symbol == 49:   #1
+            self.test_selected_edge = True
     
     def on_key_release(self, symbol, modifiers):
         pass
