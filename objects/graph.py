@@ -99,7 +99,7 @@ class Graph:
     def is_valid_edge(self, triangleNode1, triangleNode2, triangleNode3, node):
         return not self.is_in_circle(triangleNode1, triangleNode2, triangleNode3, node)
     
-    def check_flip_edge(self, flip_edges, node):
+    def check_flip_edge(self, flip_edges):
         print("flipping edges")
         while flip_edges:
             edge = flip_edges.pop()
@@ -108,11 +108,15 @@ class Graph:
             if edge in self.edges:
                 if edge.adjacent_edge != None:
                     adjacentEdge = edge.adjacent_edge
-                    otherFaceNode1 = adjacentEdge.node
-                    otherFaceNode2 = adjacentEdge.next_edge.node
-                    otherFaceNode3 = adjacentEdge.next_edge.next_edge.node
+                    A = adjacentEdge.node
+                    B = adjacentEdge.next_edge.node
+                    C = adjacentEdge.next_edge.next_edge.node
+
+                    # The node can change, we can always find which node to compare using the edge.
+                    D = edge.next_edge.node
+
                     # Check the determinant of the point compared to the triangle
-                    if not self.is_valid_edge(otherFaceNode1, otherFaceNode2, otherFaceNode3, node):
+                    if not self.is_valid_edge(A, B, C, D):
                         # Check if we can flip the edge
                         if self.check_can_flip_edge(edge):
                             print("edge is not valid, flip it!")
@@ -164,7 +168,7 @@ class Graph:
                 # We want to check whether or not the edges are valid Delaunay, we will do that by comparing
                 # the new node with the 3 triangle nodes of the adjacent face.
                 edge_flip_checks = [edge1, edge2, edge3, edge1_1, edge1_2, edge2_1, edge2_2, edge3_1, edge3_2]
-                self.check_flip_edge(edge_flip_checks, node)
+                self.check_flip_edge(edge_flip_checks)
         
         self.nodes.append(node)
         self.calculate_voronoi()

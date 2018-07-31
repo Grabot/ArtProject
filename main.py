@@ -96,23 +96,10 @@ class MainWindow(window.Window):
             
             timer += 1
 
-            # if timer % 50 == 0:
+            # if timer % 5 == 0:
             #     x = randint(0, width)
             #     y = randint(0, height)
             #     self.addNode(x, y)
-
-            if timer == 10:
-                x = 279
-                y = 231
-                self.addNode(x, y)
-            if timer == 20:
-                x = 249
-                y = 123
-                self.addNode(x, y)
-            if timer == 30:
-                x = 172
-                y = 192
-                self.addNode(x, y)
 
 
             if self.show_next_edge:
