@@ -124,79 +124,79 @@ class MainWindow(window.Window):
             
             gl.glEnable(gl.GL_BLEND)
             gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-            # Draw the nodes with how you can give it a colour
-            
-            if self.show_all_faces:
-                
-                for f in self.graph.get_faces():
-                    colour = f.colour
-                    glColor4f(colour[0] / 256, colour[1] / 256, colour[2] / 256, colour[3])
-                    n1 = f.node1
-                    n2 = f.node2
-                    n3 = f.node3
+
+            if not self.show_voronoi_faces:
+
+                if self.show_all_faces:
+
+                    for f in self.graph.get_faces():
+                        colour = f.colour
+                        glColor4f(colour[0] / 256, colour[1] / 256, colour[2] / 256, colour[3])
+                        n1 = f.node1
+                        n2 = f.node2
+                        n3 = f.node3
+                        draw(3, GL_POLYGON,
+                             ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
+
+                # Draw the nodes with how you can give it a colour
+                glColor4f(1, 0, 0, 1.0)
+                for n in self.graph.nodes:
+                    nodeX = n.x
+                    nodeY = n.y
+                    draw(4, GL_QUADS, ('v2f', [
+                        nodeX - nodeSize, nodeY - nodeSize,
+                        nodeX - nodeSize, nodeY + nodeSize,
+                        nodeX + nodeSize, nodeY + nodeSize,
+                        nodeX + nodeSize, nodeY - nodeSize
+                    ]))
+                # draw the edges using the half edge data structure
+                glColor4f(0, 1, 0, 1.0)
+                for e in self.graph.edges:
+                    adjacentEdge = e.adjacent_edge
+                    # It is possible that there is no adjacent edge, this is the case for the outer edges, we don't need to draw them.
+                    if adjacentEdge != None:
+                        nodeFrom = e.adjacent_edge.node
+                        nodeTo = e.node
+                        draw(4, GL_LINES, (
+                            'v2f', (0, 0, 0, height, nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y)))
+
+                if self.show_edge:
+                    # Some visual debugging, show the edge as thicker and blue and draw the face.
+                    gl.glLineWidth(5)
+                    glColor4f(0, 0, 1, 1.0)
+                    adjacentEdge = self.the_edge_to_show.adjacent_edge
+                    if adjacentEdge != None:
+                        nodeFrom = self.the_edge_to_show.adjacent_edge.node
+                        nodeTo = self.the_edge_to_show.node
+                        # print("edge name is " + self.showEdge)
+                        draw(4, GL_LINES, (
+                            'v2f', (0, 0, 0, height, nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y)))
+
+                    if self.show_face:
+                        current_face = self.the_edge_to_show.face
+                        n1 = current_face.node1
+                        n2 = current_face.node2
+                        n3 = current_face.node3
+                        draw(3, GL_POLYGON,
+                                             ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
+                    if self.test_selected_edge:
+                        self.test_selected_edge = False
+                        print("test the edge:", self.graph.test_edge(self.the_edge_to_show))
+
+
+                # draw the clicked face (for testing if the face finder is correct)
+                if self.show_test_face:
+                    glColor4f(0, 0, 0, 1.0)
+                    n1 = self.check_face.node1
+                    n2 = self.check_face.node2
+                    n3 = self.check_face.node3
                     draw(3, GL_POLYGON,
-                                         ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
-            
-            if self.show_voronoi_faces:
-                print("show Voronoi faces")
-            
-            glColor4f(1, 0, 0, 1.0)
-            for n in self.graph.nodes:
-                nodeX = n.x
-                nodeY = n.y
-                draw(4, GL_QUADS, ('v2f', [
-                    nodeX - nodeSize, nodeY - nodeSize,
-                    nodeX - nodeSize, nodeY + nodeSize,
-                    nodeX + nodeSize, nodeY + nodeSize,
-                    nodeX + nodeSize, nodeY - nodeSize
-                ]))
-            # draw the edges using the half edge data structure
-            glColor4f(0, 1, 0, 1.0)
-            for e in self.graph.edges:
-                adjacentEdge = e.adjacent_edge
-                # It is possible that there is no adjacent edge, this is the case for the outer edges, we don't need to draw them.
-                if adjacentEdge != None:
-                    nodeFrom = e.adjacent_edge.node
-                    nodeTo = e.node
-                    draw(4, GL_LINES, (
-                        'v2f', (0, 0, 0, height, nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y)))
-            
-            if self.show_edge:
-                # Some visual debugging, show the edge as thicker and blue and draw the face.
-                gl.glLineWidth(5)
-                glColor4f(0, 0, 1, 1.0)
-                adjacentEdge = self.the_edge_to_show.adjacent_edge
-                if adjacentEdge != None:
-                    nodeFrom = self.the_edge_to_show.adjacent_edge.node
-                    nodeTo = self.the_edge_to_show.node
-                    # print("edge name is " + self.showEdge)
-                    draw(4, GL_LINES, (
-                        'v2f', (0, 0, 0, height, nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y)))
-                
-                if self.show_face:
-                    current_face = self.the_edge_to_show.face
-                    n1 = current_face.node1
-                    n2 = current_face.node2
-                    n3 = current_face.node3
-                    draw(3, GL_POLYGON,
-                                         ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
-                if self.test_selected_edge:
-                    self.test_selected_edge = False
-                    print("test the edge:", self.graph.test_edge(self.the_edge_to_show))
+                         ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
 
-
-            # draw the clicked face (for testing if the face finder is correct)
-            if self.show_test_face:
-                glColor4f(0, 0, 0, 1.0)
-                n1 = self.check_face.node1
-                n2 = self.check_face.node2
-                n3 = self.check_face.node3
-                draw(3, GL_POLYGON,
-                     ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
-
-
-            # Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
-            # draw(8, GL_POLYGON, ('v2f', [300,300, 300,400, 400,500, 500,500, 600,400, 600,300, 500,200, 400,200]))
+            else:
+                print("Hello world")
+                # Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
+                # draw(8, GL_POLYGON, ('v2f', [300,300, 300,400, 400,500, 500,500, 600,400, 600,300, 500,200, 400,200]))
             
             glColor4f(0, 0, 0, 1.0)
             clock.tick()

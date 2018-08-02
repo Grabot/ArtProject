@@ -21,42 +21,7 @@ class Graph:
         # First a simple check if we can flip the edge.
         if e.adjacent_edge == None:
             return False
-        # Then another, more difficult check, to see if the edge can be flipped or if it is out of the flip bounds
-        # We do this by checking if the 2 faces combined are convex, if not the edge cannot be flipped.
-        edge1 = e
-        edge2 = e.adjacent_edge
-        node1 = edge1.next_edge.node
-        node2 = edge1.next_edge.next_edge.node
-        node3 = edge2.next_edge.node
-        node4 = edge2.next_edge.next_edge.node
-        triangle_ABC = (node1.y - node2.y) * node3.x + (node2.x - node1.x) * node3.y + (
-                    node1.x * node2.y - node2.x * node1.y)
-        triangle_ABD = (node1.y - node2.y) * node4.x + (node2.x - node1.x) * node4.y + (
-                    node1.x * node2.y - node2.x * node1.y)
-        triangle_BCD = (node2.y - node3.y) * node4.x + (node3.x - node2.x) * node4.y + (
-                    node2.x * node3.y - node3.x * node2.y)
-        triangle_CAD = (node3.y - node1.y) * node4.x + (node1.x - node3.x) * node4.y + (
-                    node3.x * node1.y - node1.x * node3.y)
-
-        if triangle_ABC < 0:
-            triangle_ABC = triangle_ABC * -1
-            triangle_ABD = triangle_ABD * -1
-            triangle_BCD = triangle_BCD * -1
-            triangle_CAD = triangle_CAD * -1
-
-        # not sure if it's correct, but taken from this.
-        # https://stackoverflow.com/questions/2122305/convex-hull-of-4-points
-        if triangle_ABC > 0 and triangle_ABD > 0 and triangle_BCD > 0 and triangle_CAD > 0:
-            return False
-        if triangle_ABC > 0 and triangle_ABD > 0 and triangle_BCD < 0 and triangle_CAD < 0:
-            return False
-        if triangle_ABC > 0 and triangle_ABD < 0 and triangle_BCD > 0 and triangle_CAD < 0:
-            return False
-        if triangle_ABC > 0 and triangle_ABD < 0 and triangle_BCD < 0 and triangle_CAD > 0:
-            return False
-
         return True
-
 
     def flip_edge(self, e):
         # First a simple check if we can flip the edge.
