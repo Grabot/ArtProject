@@ -13,4 +13,4 @@ Just install the Python dependencies through pip, possibly in a virtual environm
 
 Then to run in interactive mode (tested with Python 3.5):
 
-    python3 Main.py
+    python3 main.py
