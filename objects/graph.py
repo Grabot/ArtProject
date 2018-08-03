@@ -1,7 +1,8 @@
 from random import shuffle
 
 import numpy
-import time
+import math
+from objects.node import Node
 import objects.graph_logic as GraphLogic
 
 
@@ -12,6 +13,7 @@ class Graph:
         # Starting with _ is the Python way to mark this field as private.
         # This happens because external code should use the randomized get_faces() method.
         self._faces = faces or []
+        self._voronoi_faces = []
     
     def get_faces(self):
         shuffle(self._faces)
@@ -140,9 +142,6 @@ class Graph:
     
     def orientation(self, p1, p2, p3):
         return (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)
-    
-    def calculate_voronoi(self):
-        print("calculate_voronoi")
 
     def find_check_face(self, x, y):
         for f in self._faces:
@@ -175,3 +174,46 @@ class Graph:
                     if self.check_can_flip_edge(the_edge):
                         return True
         return False
+
+    def get_slope(self, p1, p2):
+        slope = (p1.y - p2.y) / (p1.x - p2.x)
+        return slope
+
+    def get_intersection(self, line1, line2):
+        slope1, slope2 = line1[0], line2[0]
+        yint1, yint2 = line1[1], line2[1]
+        matA = numpy.matrix([[(slope1 * -1), 1], [(slope2 * -1), 1]])
+        matB = numpy.matrix([[yint1], [yint2]])
+        invA = matA.getI()
+        resultant = invA * matB
+        return Node(resultant[0, 0], resultant[1, 0])
+
+    def get_midpoint(self, p1, p2):
+        midNode = Node(((p1.x + p2.x) / 2), ((p1.y + p2.y) / 2))
+        return midNode
+
+    def perp_slope(self, slope):
+        # takes slope and returns the slope of a line perpendicular to it
+        if slope == 0:
+            slope += 0.00000000000001
+        return (slope * -1) ** -1
+
+    def line_from_slope(self, slope, point):
+        return [slope, (slope * (-1 * point.x)) + point.y]
+
+    def calculate_voronoi(self):
+        print("calculate_voronoi")
+        for f in self._faces:
+            # We need to get the circumcenter of all the faces and that will be the nodes of the voronoi.
+
+            mid1 = self.get_midpoint(f.node1, f.node2)
+            mid2 = self.get_midpoint(f.node2, f.node3)
+            line1 = self.get_slope(f.node1, f.node2)
+            line2 = self.get_slope(f.node2, f.node3)
+            perp1 = self.perp_slope(line1)
+            perp2 = self.perp_slope(line2)
+            perpbi1 = self.line_from_slope(perp1, mid1)
+            perpbi2 = self.line_from_slope(perp2, mid2)
+            circumcent = self.get_intersection(perpbi1, perpbi2)
+
+            print([circumcent.x, circumcent.y])

@@ -21,54 +21,35 @@ class MainWindow(window.Window):
         self.height = height
         self.voronoi_image = VoronoiImage(image_name)
 
-        node1 = Node(-99999, -99999)
-        node2 = Node(99999, -99999)
-        node3 = Node(99999, 99999)
-        node4 = Node(-99999, 99999)
+        # Manually add 3 nodes with triangulation edges far outside the sight.
+        node1 = Node(-9999999, -9999999)
+        node2 = Node(9999999, -9999999)
+        node3 = Node(0, 9999999)
 
         face1 = Face(node1, node2, node3)
-        face2 = Face(node3, node4, node1)
 
         half_edge1 = HalfEdge(node1, face1)
         half_edge2 = HalfEdge(node2, face1)
         half_edge3 = HalfEdge(node3, face1)
 
+        # It is possible that there isn't a adjacent Edge. This is the case for the outer edges.
         half_edge1.next_edge = half_edge2
         half_edge2.next_edge = half_edge3
         half_edge3.next_edge = half_edge1
 
-        half_edge4 = HalfEdge(node3, face2)
-        half_edge5 = HalfEdge(node4, face2)
-        half_edge6 = HalfEdge(node1, face2)
-
-        half_edge4.next_edge = half_edge5
-        half_edge5.next_edge = half_edge6
-        half_edge6.next_edge = half_edge4
-
-        # It is possible that there isn't a adjacent Edge. This is the case for the outer edges.
-        # (except for the center one)
-        half_edge1.adjacent_edge = half_edge4
-        half_edge4.adjacent_edge = half_edge1
-
         face1.edge = half_edge1
-        face2.edge = half_edge4
 
         nodes = []
         nodes.append(node1)
         nodes.append(node2)
         nodes.append(node3)
-        nodes.append(node4)
         faces = []
         faces.append(face1)
-        faces.append(face2)
         half_edges = []
         half_edges.append(half_edge1)
         half_edges.append(half_edge2)
         half_edges.append(half_edge3)
-        half_edges.append(half_edge4)
-        half_edges.append(half_edge5)
-        half_edges.append(half_edge6)
-        
+
         # We will select a sorta random edge that is not on the outside.
         self.the_edge_to_show = half_edges[2]
         self.show_face = False
@@ -82,6 +63,7 @@ class MainWindow(window.Window):
         self.test_selected_edge = False
         
         self.graph = Graph(nodes, half_edges, faces)
+        self.graph.calculate_voronoi()
 
         self.check_face = self.graph.find_check_face(0, 0)
     
