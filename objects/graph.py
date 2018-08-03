@@ -3,6 +3,7 @@ from random import shuffle
 import numpy
 import math
 from objects.node import Node
+from objects.edge import Edge
 import objects.graph_logic as GraphLogic
 
 
@@ -13,11 +14,21 @@ class Graph:
         # Starting with _ is the Python way to mark this field as private.
         # This happens because external code should use the randomized get_faces() method.
         self._faces = faces or []
+        self._voronoi_nodes = []
+        self._voronoi_edges = []
         self._voronoi_faces = []
     
     def get_faces(self):
         shuffle(self._faces)
         return self._faces
+
+    def get_voronoi_nodes(self):
+        shuffle(self._voronoi_nodes)
+        return self._voronoi_nodes
+
+    def get_voronoi_edges(self):
+        shuffle(self._voronoi_edges)
+        return self._voronoi_edges
 
     def check_can_flip_edge(self, e):
         # First a simple check if we can flip the edge.
@@ -138,7 +149,8 @@ class Graph:
                 self.check_flip_edge(edge_flip_checks)
         
         self.nodes.append(node)
-        self.calculate_voronoi()
+        self.calculate_voronoi_nodes()
+        self.calculate_voronoi_edges()
     
     def orientation(self, p1, p2, p3):
         return (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)
@@ -201,8 +213,9 @@ class Graph:
     def line_from_slope(self, slope, point):
         return [slope, (slope * (-1 * point.x)) + point.y]
 
-    def calculate_voronoi(self):
-        print("calculate_voronoi")
+    def calculate_voronoi_nodes(self):
+        print("calculate_voronoi nodes")
+        self._voronoi_nodes = []
         for f in self._faces:
             # We need to get the circumcenter of all the faces and that will be the nodes of the voronoi.
 
@@ -216,4 +229,38 @@ class Graph:
             perpbi2 = self.line_from_slope(perp2, mid2)
             circumcent = self.get_intersection(perpbi1, perpbi2)
 
-            print([circumcent.x, circumcent.y])
+            self._voronoi_nodes.append(circumcent)
+            f.set_voronoi_node(circumcent)
+
+    def calculate_voronoi_edges(self):
+        print("calculate voronoi edges")
+        self._voronoi_edges = []
+        for f in self._faces:
+            # We will connect all the voronoi nodes with the 3 adjacent voronoi nodes in the faces of it's corresponding face.
+            face_edge1 = f.edge
+            face_edge2 = face_edge1.next_edge
+            face_edge3 = face_edge1.next_edge.next_edge
+
+            face1 = None
+            face2 = None
+            face3 = None
+            if face_edge1.adjacent_edge != None:
+                face1 = face_edge1.adjacent_edge.face
+
+            if face_edge2.adjacent_edge != None:
+                face2 = face_edge2.adjacent_edge.face
+
+            if face_edge3.adjacent_edge != None:
+                face3 = face_edge3.adjacent_edge.face
+
+            # We now have the current face and all it's adjacent faces.
+            # We have already calculated the voronoi nodes for these faces, so we can connect them
+            if face1 != None:
+                self._voronoi_edges.append(Edge(f.get_voronoi_node(), face1.get_voronoi_node()))
+
+            if face2 != None:
+                self._voronoi_edges.append(Edge(f.get_voronoi_node(), face2.get_voronoi_node()))
+
+            if face3 != None:
+                self._voronoi_edges.append(Edge(f.get_voronoi_node(), face3.get_voronoi_node()))
+

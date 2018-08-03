@@ -63,7 +63,7 @@ class MainWindow(window.Window):
         self.test_selected_edge = False
         
         self.graph = Graph(nodes, half_edges, faces)
-        self.graph.calculate_voronoi()
+        self.graph.calculate_voronoi_nodes()
 
         self.check_face = self.graph.find_check_face(0, 0)
     
@@ -176,7 +176,39 @@ class MainWindow(window.Window):
                          ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
 
             else:
-                print("Hello world")
+                # Draw the nodes with how you can give it a colour
+                glColor4f(1, 0, 0, 1.0)
+                for n in self.graph.nodes:
+                    nodeX = n.x
+                    nodeY = n.y
+                    draw(4, GL_QUADS, ('v2f', [
+                        nodeX - nodeSize, nodeY - nodeSize,
+                        nodeX - nodeSize, nodeY + nodeSize,
+                        nodeX + nodeSize, nodeY + nodeSize,
+                        nodeX + nodeSize, nodeY - nodeSize
+                    ]))
+
+                # Draw the voronoi nodes with how you can give it a colour
+                glColor4f(0, 1, 0, 1.0)
+                for n in self.graph.get_voronoi_nodes():
+                    nodeX = n.x
+                    nodeY = n.y
+                    draw(4, GL_QUADS, ('v2f', [
+                        nodeX - nodeSize, nodeY - nodeSize,
+                        nodeX - nodeSize, nodeY + nodeSize,
+                        nodeX + nodeSize, nodeY + nodeSize,
+                        nodeX + nodeSize, nodeY - nodeSize
+                    ]))
+
+                # draw the edges of the voronoi, which have a normal data structure
+                glColor4f(0, 0, 1, 1.0)
+                for e in self.graph.get_voronoi_edges():
+                    nodeFrom = e.node_from
+                    nodeTo = e.node_to
+                    draw(4, GL_LINES, (
+                        'v2f', (0, 0, 0, height, nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y)))
+
+
                 # Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
                 # draw(8, GL_POLYGON, ('v2f', [300,300, 300,400, 400,500, 500,500, 600,400, 600,300, 500,200, 400,200]))
             
