@@ -202,11 +202,12 @@ class MainWindow(window.Window):
 
                 # draw the edges of the voronoi, which have a normal data structure
                 glColor4f(0, 0, 1, 1.0)
-                for e in self.graph.get_voronoi_edges():
-                    nodeFrom = e.node_from
-                    nodeTo = e.node_to
-                    draw(4, GL_LINES, (
-                        'v2f', (0, 0, 0, height, nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y)))
+                for f in self.graph.get_faces():
+                    for e in f.get_voronoi_edges():
+                        nodeFrom = e.node_from
+                        nodeTo = e.node_to
+                        draw(4, GL_LINES, (
+                            'v2f', (0, 0, 0, height, nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y)))
 
 
                 # Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
