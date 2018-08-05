@@ -202,8 +202,8 @@ class MainWindow(window.Window):
 
                 # draw the edges of the voronoi, which have a normal data structure
                 glColor4f(0, 0, 1, 1.0)
-                for f in self.graph.get_faces():
-                    for e in f.get_voronoi_edges():
+                for n in self.graph.nodes:
+                    for e in n.get_voronoi_edges():
                         nodeFrom = e.node_from
                         nodeTo = e.node_to
                         draw(4, GL_LINES, (

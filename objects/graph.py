@@ -151,6 +151,7 @@ class Graph:
         self.nodes.append(node)
         self.calculate_voronoi_nodes()
         self.calculate_voronoi_edges()
+        self.calculate_voronoi_faces()
     
     def orientation(self, p1, p2, p3):
         return (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)
@@ -240,6 +241,9 @@ class Graph:
         for f in self._faces:
             f.clear_voronoi_edges()
 
+        for n in self.nodes:
+            n.clear_voronoi_edges()
+
         for f in self._faces:
             # We will connect all the voronoi nodes with the 3 adjacent voronoi nodes in the faces of it's corresponding face.
             face_edge1 = f.edge
@@ -267,6 +271,9 @@ class Graph:
                 self._voronoi_edges.append(edge)
                 f.append_voronoi_edges(edge)
                 face1.append_voronoi_edges(edge)
+                f.node1.add_voronoi_edge(edge)
+                f.node2.add_voronoi_edge(edge)
+                f.node3.add_voronoi_edge(edge)
 
             if face2 != None:
                 edge = Edge(f.get_voronoi_node(), face2.get_voronoi_node())
@@ -274,6 +281,9 @@ class Graph:
                 self._voronoi_edges.append(edge)
                 f.append_voronoi_edges(edge)
                 face2.append_voronoi_edges(edge)
+                f.node1.add_voronoi_edge(edge)
+                f.node2.add_voronoi_edge(edge)
+                f.node3.add_voronoi_edge(edge)
 
             if face3 != None:
                 edge = Edge(f.get_voronoi_node(), face3.get_voronoi_node())
@@ -281,3 +291,12 @@ class Graph:
                 self._voronoi_edges.append(edge)
                 f.append_voronoi_edges(edge)
                 face3.append_voronoi_edges(edge)
+                f.node1.add_voronoi_edge(edge)
+                f.node2.add_voronoi_edge(edge)
+                f.node3.add_voronoi_edge(edge)
+
+
+    def calculate_voronoi_faces(self):
+        print("calculating voronoi faces")
+        for n in self.nodes:
+            test = ""
