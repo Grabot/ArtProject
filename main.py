@@ -217,6 +217,8 @@ class MainWindow(window.Window):
                     if n.get_voronoi_face() != None:
                         voronoi_face = n.get_voronoi_face()
                         polygonXY = []
+                        colour = voronoi_face.colour
+                        glColor4f(colour[0] / 256, colour[1] / 256, colour[2] / 256, colour[3])
                         for v_node in voronoi_face.get_nodes():
                             polygonXY.append(v_node.x)
                             polygonXY.append(v_node.y)
