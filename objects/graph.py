@@ -3,6 +3,7 @@ from random import shuffle
 import numpy
 import math
 from objects.node import Node
+from objects.voronoi_face import VoronoiFace
 from objects.edge import Edge
 import objects.graph_logic as GraphLogic
 
@@ -312,4 +313,20 @@ class Graph:
     def calculate_voronoi_faces(self):
         print("calculating voronoi faces")
         for n in self.nodes:
-            test = ""
+            if n.get_voronoi_face() == None:
+                # Create a new Voronoi face object fo the node
+                n.set_voronoi_face(VoronoiFace())
+
+            # First we remove all the nodes on the face, this is because we're going to calculate them again
+            voronoi_face = n.get_voronoi_face()
+            voronoi_face.clear_nodes()
+
+            # Find all the nodes from the face from the edges on the node.
+            for e in n.get_voronoi_edges():
+                node_from = e.node_from
+                node_to = e.node_to
+                if not voronoi_face.contains(node_from):
+                    voronoi_face.add_node(node_from)
+                if not voronoi_face.contains(node_to):
+                    voronoi_face.add_node(node_to)
+

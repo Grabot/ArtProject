@@ -211,7 +211,16 @@ class MainWindow(window.Window):
 
 
                 # Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
-                # draw(8, GL_POLYGON, ('v2f', [300,300, 300,400, 400,500, 500,500, 600,400, 600,300, 500,200, 400,200]))
+                # for n in self.graph.nodes:
+                if len(self.graph.nodes) > 6:
+                    n = self.graph.nodes[6]
+                    if n.get_voronoi_face() != None:
+                        voronoi_face = n.get_voronoi_face()
+                        polygonXY = []
+                        for v_node in voronoi_face.get_nodes():
+                            polygonXY.append(v_node.x)
+                            polygonXY.append(v_node.y)
+                        draw(len(voronoi_face.get_nodes()), GL_POLYGON, ('v2f', polygonXY))
             
             glColor4f(0, 0, 0, 1.0)
             clock.tick()
