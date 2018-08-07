@@ -269,31 +269,44 @@ class Graph:
                 edge = Edge(f.get_voronoi_node(), face1.get_voronoi_node())
                 voronoi_edges.append(edge)
                 self._voronoi_edges.append(edge)
-                f.append_voronoi_edges(edge)
-                face1.append_voronoi_edges(edge)
-                f.node1.add_voronoi_edge(edge)
-                f.node2.add_voronoi_edge(edge)
-                f.node3.add_voronoi_edge(edge)
+
+                if f.node1 == face1.node1 or f.node1 == face1.node2 or f.node1 == face1.node3:
+                    f.node1.add_voronoi_edge(edge)
+
+                if f.node2 == face1.node1 or f.node2 == face1.node2 or f.node2 == face1.node3:
+                    f.node2.add_voronoi_edge(edge)
+
+                if f.node3 == face1.node1 or f.node3 == face1.node2 or f.node3 == face1.node3:
+                    f.node3.add_voronoi_edge(edge)
+
 
             if face2 != None:
                 edge = Edge(f.get_voronoi_node(), face2.get_voronoi_node())
                 voronoi_edges.append(edge)
                 self._voronoi_edges.append(edge)
-                f.append_voronoi_edges(edge)
-                face2.append_voronoi_edges(edge)
-                f.node1.add_voronoi_edge(edge)
-                f.node2.add_voronoi_edge(edge)
-                f.node3.add_voronoi_edge(edge)
+
+                if f.node1 == face2.node1 or f.node1 == face2.node2 or f.node1 == face2.node3:
+                    f.node1.add_voronoi_edge(edge)
+
+                if f.node2 == face2.node1 or f.node2 == face2.node2 or f.node2 == face2.node3:
+                    f.node2.add_voronoi_edge(edge)
+
+                if f.node3 == face2.node1 or f.node3 == face2.node2 or f.node3 == face2.node3:
+                    f.node3.add_voronoi_edge(edge)
 
             if face3 != None:
                 edge = Edge(f.get_voronoi_node(), face3.get_voronoi_node())
                 voronoi_edges.append(edge)
                 self._voronoi_edges.append(edge)
-                f.append_voronoi_edges(edge)
-                face3.append_voronoi_edges(edge)
-                f.node1.add_voronoi_edge(edge)
-                f.node2.add_voronoi_edge(edge)
-                f.node3.add_voronoi_edge(edge)
+
+                if f.node1 == face3.node1 or f.node1 == face3.node2 or f.node1 == face3.node3:
+                    f.node1.add_voronoi_edge(edge)
+
+                if f.node2 == face3.node1 or f.node2 == face3.node2 or f.node2 == face3.node3:
+                    f.node2.add_voronoi_edge(edge)
+
+                if f.node3 == face3.node1 or f.node3 == face3.node2 or f.node3 == face3.node3:
+                    f.node3.add_voronoi_edge(edge)
 
 
     def calculate_voronoi_faces(self):
