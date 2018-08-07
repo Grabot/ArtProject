@@ -54,7 +54,7 @@ class MainWindow(window.Window):
         self.the_edge_to_show = half_edges[2]
         self.show_face = False
         self.show_all_faces = False
-        self.show_voronoi_faces = False
+        self.show_voronoi_faces = True
         self.show_next_edge = False
         self.should_get_adjacent_edge = False
         self.flip_edge = False
@@ -78,10 +78,10 @@ class MainWindow(window.Window):
             
             timer += 1
 
-            # if timer % 5 == 0:
-            #     x = randint(0, width)
-            #     y = randint(0, height)
-            #     self.addNode(x, y)
+            if timer % 5 == 0:
+                x = randint(0, width)
+                y = randint(0, height)
+                self.addNode(x, y)
 
 
             if self.show_next_edge:
@@ -211,9 +211,7 @@ class MainWindow(window.Window):
 
 
                 # Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
-                # for n in self.graph.nodes:
-                if len(self.graph.nodes) > 6:
-                    n = self.graph.nodes[6]
+                for n in self.graph.nodes:
                     if n.get_voronoi_face() != None:
                         voronoi_face = n.get_voronoi_face()
                         polygonXY = []

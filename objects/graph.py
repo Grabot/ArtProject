@@ -330,3 +330,5 @@ class Graph:
                 if not voronoi_face.contains(node_to):
                     voronoi_face.add_node(node_to)
 
+            voronoi_face.gift_wrapping()
+
