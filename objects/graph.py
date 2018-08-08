@@ -1,7 +1,18 @@
 from random import shuffle
+import objects.graph_logic as graph_logic
 
-import numpy
-import objects.graph_logic as GraphLogic
+
+def is_in_face(p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, node_x, node_y):
+    Area = 0.5 * (-p1_y * p2_x + p0_y * (-p1_x + p2_x) + p0_x * (p1_y - p2_y) + p1_x * p2_y)
+
+    s = 1 / (2 * Area) * (p0_y * p2_x - p0_x * p2_y + (p2_y - p0_y) * node_x + (p0_x - p2_x) * node_y)
+    t = 1 / (2 * Area) * (p0_x * p1_y - p0_y * p1_x + (p0_y - p1_y) * node_x + (p1_x - p0_x) * node_y)
+
+    return s > 0 and t > 0 and 1 - s - t > 0
+
+
+def orientation(p1, p2, p3):
+    return (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)
 
 
 class Graph:
@@ -27,15 +38,9 @@ class Graph:
         shuffle(self._voronoi_edges)
         return self._voronoi_edges
 
-    def check_can_flip_edge(self, e):
-        # First a simple check if we can flip the edge.
-        if e.adjacent_edge == None:
-            return False
-        return True
-
     def flip_edge(self, e):
         # First a simple check if we can flip the edge.
-        [e1, e2, new_face1, new_face2, e1_1, e2_1] = GraphLogic.flip_edge(e)
+        [e1, e2, new_face1, new_face2, e1_1, e2_1] = graph_logic.flip_edge(e)
 
         # Add the new faces and also remove the old ones.
         self.edges.remove(e1)
@@ -59,22 +64,6 @@ class Graph:
             if e == edge:
                 return self.flip_edge(e)[0]
 
-    """
-    Returns True is D lies in the circumcircle of ABC
-    This is done by determining the determinant of a matrix.
-    """
-
-    def is_in_circle(self, A, B, C, D):
-        M = [[A.x, A.y, (pow(A.x, 2) + pow(A.y, 2)), 1],
-             [B.x, B.y, (pow(B.x, 2) + pow(B.y, 2)), 1],
-             [C.x, C.y, (pow(C.x, 2) + pow(C.y, 2)), 1],
-             [D.x, D.y, (pow(D.x, 2) + pow(D.y, 2)), 1]]
-        det_result = numpy.linalg.det(M)
-        return det_result > 0
-
-    def is_valid_edge(self, triangleNode1, triangleNode2, triangleNode3, node):
-        return not self.is_in_circle(triangleNode1, triangleNode2, triangleNode3, node)
-
     def check_flip_edge(self, flip_edges):
         print("flipping edges")
         while flip_edges:
@@ -82,7 +71,7 @@ class Graph:
 
             # It is possible that the edge has since been removed.
             if edge in self.edges:
-                if edge.adjacent_edge != None:
+                if edge.adjacent_edge is not None:
                     adjacentEdge = edge.adjacent_edge
                     A = adjacentEdge.node
                     B = adjacentEdge.next_edge.node
@@ -92,38 +81,25 @@ class Graph:
                     D = edge.next_edge.node
 
                     # Check the determinant of the point compared to the triangle
-                    if not self.is_valid_edge(A, B, C, D):
-                        # Check if we can flip the edge
-                        if self.check_can_flip_edge(edge):
-                            print("edge is not valid, flip it!")
-                            [e1_1, e2_1] = self.flip_edge(edge)
-                            # check the other edges now, except if it is an outer edge
-                            flip_edges.append(e1_1.next_edge)
-                            flip_edges.append(e1_1.next_edge.next_edge)
-                            flip_edges.append(e2_1.next_edge)
-                            flip_edges.append(e2_1.next_edge.next_edge)
-
-    def is_in_face(self, p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, node_x, node_y):
-        Area = 0.5 * (-p1_y * p2_x + p0_y * (-p1_x + p2_x) + p0_x * (
-                p1_y - p2_y) + p1_x * p2_y)
-
-        s = 1 / (2 * Area) * (p0_y * p2_x - p0_x * p2_y + (p2_y - p0_y) * node_x + (
-                p0_x - p2_x) * node_y)
-        t = 1 / (2 * Area) * (p0_x * p1_y - p0_y * p1_x + (p0_y - p1_y) * node_x + (
-                p1_x - p0_x) * node_y)
-
-        return s > 0 and t > 0 and 1 - s - t > 0
+                    if not graph_logic.is_valid_edge(A, B, C, D):
+                        print("edge is not valid, flip it!")
+                        [e1_1, e2_1] = self.flip_edge(edge)
+                        # check the other edges now, except if it is an outer edge
+                        flip_edges.append(e1_1.next_edge)
+                        flip_edges.append(e1_1.next_edge.next_edge)
+                        flip_edges.append(e2_1.next_edge)
+                        flip_edges.append(e2_1.next_edge.next_edge)
 
     def add_node(self, node):
         print("add node")
         # We have added a node, so we want to find out which face it is in and connect it with edges
         for f in self._faces:
-            if self.is_in_face(f.node1.x, f.node1.y, f.node2.x, f.node2.y, f.node3.x, f.node3.y, node.x, node.y):
+            if is_in_face(f.node1.x, f.node1.y, f.node2.x, f.node2.y, f.node3.x, f.node3.y, node.x, node.y):
                 [
                     face1, face2, face3,
                     edge1_1, edge1_2, edge2_1, edge2_2, edge3_1, edge3_2,
                     edge1, edge2, edge3
-                ] = GraphLogic.add_node(f, node)
+                ] = graph_logic.add_node(f, node)
 
                 self._faces.append(face1)
                 self._faces.append(face2)
@@ -148,12 +124,9 @@ class Graph:
         self.nodes.append(node)
         self.calculate_voronoi()
 
-    def orientation(self, p1, p2, p3):
-        return (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)
-
     def find_check_face(self, x, y):
         for f in self._faces:
-            if self.is_in_face(f.node1.x, f.node1.y, f.node2.x, f.node2.y, f.node3.x, f.node3.y, x, y):
+            if is_in_face(f.node1.x, f.node1.y, f.node2.x, f.node2.y, f.node3.x, f.node3.y, x, y):
                 return f
 
     def test_edge(self, the_edge):
@@ -177,13 +150,11 @@ class Graph:
                 print("Dx:", D.x, "Dy:", D.y)
 
                 # Check the determinant of the point compared to the triangle
-                if not self.is_valid_edge(A, B, C, D):
-                    # Check if we can flip the edge
-                    if self.check_can_flip_edge(the_edge):
-                        return True
+                if not graph_logic.is_valid_edge(A, B, C, D):
+                    return True
         return False
 
     def calculate_voronoi(self):
-        self._voronoi_nodes = GraphLogic.calculate_voronoi_nodes(self._faces)
-        self._voronoi_edges = GraphLogic.calculate_voronoi_edges(self._faces, self.nodes)
-        GraphLogic.calculate_voronoi_faces(self.nodes)
+        self._voronoi_nodes = graph_logic.calculate_voronoi_nodes(self._faces)
+        self._voronoi_edges = graph_logic.calculate_voronoi_edges(self._faces, self.nodes)
+        graph_logic.calculate_voronoi_faces(self.nodes)
