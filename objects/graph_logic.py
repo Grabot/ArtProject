@@ -1,5 +1,9 @@
 from objects.face import Face
 from objects.half_edge import HalfEdge
+from objects.voronoi_face import VoronoiFace
+from objects.node import Node
+from objects.edge import Edge
+import numpy
 
 
 def add_node(face, node):
@@ -121,3 +125,151 @@ def flip_edge(edge):
     e2_1.next_edge.next_edge.face = new_face2
     
     return [e1, e2, new_face1, new_face2, e1_1, e2_1]
+
+
+def get_slope(p1, p2):
+    slope = (p1.y - p2.y) / (p1.x - p2.x)
+    return slope
+
+
+def get_intersection(line1, line2):
+    slope1, slope2 = line1[0], line2[0]
+    yint1, yint2 = line1[1], line2[1]
+    matA = numpy.matrix([[(slope1 * -1), 1], [(slope2 * -1), 1]])
+    matB = numpy.matrix([[yint1], [yint2]])
+    invA = matA.getI()
+    resultant = invA * matB
+    return Node(resultant[0, 0], resultant[1, 0])
+
+
+def get_midpoint(p1, p2):
+    midNode = Node(((p1.x + p2.x) / 2), ((p1.y + p2.y) / 2))
+    return midNode
+
+
+def perp_slope(slope):
+    # takes slope and returns the slope of a line perpendicular to it
+    if slope == 0:
+        slope += 0.00000000000001
+    return (slope * -1) ** -1
+
+
+def line_from_slope(slope, point):
+    return [slope, (slope * (-1 * point.x)) + point.y]
+
+
+def calculate_voronoi_nodes(_faces):
+    _voronoi_nodes = []
+    for f in _faces:
+        # We need to get the circumcenter of all the faces and that will be the nodes of the voronoi.
+
+        mid1 = get_midpoint(f.node1, f.node2)
+        mid2 = get_midpoint(f.node2, f.node3)
+        line1 = get_slope(f.node1, f.node2)
+        line2 = get_slope(f.node2, f.node3)
+        perp1 = perp_slope(line1)
+        perp2 = perp_slope(line2)
+        perpbi1 = line_from_slope(perp1, mid1)
+        perpbi2 = line_from_slope(perp2, mid2)
+        circumcent = get_intersection(perpbi1, perpbi2)
+
+        _voronoi_nodes.append(circumcent)
+        f.set_voronoi_node(circumcent)
+    return _voronoi_nodes
+
+
+def calculate_voronoi_edges(_faces, nodes):
+    # first clear all the edges because we are going to re-calculate them
+    _voronoi_edges = []
+    for f in _faces:
+        f.clear_voronoi_edges()
+
+    for n in nodes:
+        n.clear_voronoi_edges()
+
+    for f in _faces:
+        # We will connect all the voronoi nodes with the 3 adjacent voronoi nodes in the faces of it's corresponding face.
+        face_edge1 = f.edge
+        face_edge2 = face_edge1.next_edge
+        face_edge3 = face_edge1.next_edge.next_edge
+
+        face1 = None
+        face2 = None
+        face3 = None
+        if face_edge1.adjacent_edge != None:
+            face1 = face_edge1.adjacent_edge.face
+
+        if face_edge2.adjacent_edge != None:
+            face2 = face_edge2.adjacent_edge.face
+
+        if face_edge3.adjacent_edge != None:
+            face3 = face_edge3.adjacent_edge.face
+
+        voronoi_edges = []
+        # We now have the current face and all it's adjacent faces.
+        # We have already calculated the voronoi nodes for these faces, so we can connect them
+        if face1 != None:
+            edge = Edge(f.get_voronoi_node(), face1.get_voronoi_node())
+            voronoi_edges.append(edge)
+            _voronoi_edges.append(edge)
+
+            if f.node1 == face1.node1 or f.node1 == face1.node2 or f.node1 == face1.node3:
+                f.node1.add_voronoi_edge(edge)
+
+            if f.node2 == face1.node1 or f.node2 == face1.node2 or f.node2 == face1.node3:
+                f.node2.add_voronoi_edge(edge)
+
+            if f.node3 == face1.node1 or f.node3 == face1.node2 or f.node3 == face1.node3:
+                f.node3.add_voronoi_edge(edge)
+
+
+        if face2 != None:
+            edge = Edge(f.get_voronoi_node(), face2.get_voronoi_node())
+            voronoi_edges.append(edge)
+            _voronoi_edges.append(edge)
+
+            if f.node1 == face2.node1 or f.node1 == face2.node2 or f.node1 == face2.node3:
+                f.node1.add_voronoi_edge(edge)
+
+            if f.node2 == face2.node1 or f.node2 == face2.node2 or f.node2 == face2.node3:
+                f.node2.add_voronoi_edge(edge)
+
+            if f.node3 == face2.node1 or f.node3 == face2.node2 or f.node3 == face2.node3:
+                f.node3.add_voronoi_edge(edge)
+
+        if face3 != None:
+            edge = Edge(f.get_voronoi_node(), face3.get_voronoi_node())
+            voronoi_edges.append(edge)
+            _voronoi_edges.append(edge)
+
+            if f.node1 == face3.node1 or f.node1 == face3.node2 or f.node1 == face3.node3:
+                f.node1.add_voronoi_edge(edge)
+
+            if f.node2 == face3.node1 or f.node2 == face3.node2 or f.node2 == face3.node3:
+                f.node2.add_voronoi_edge(edge)
+
+            if f.node3 == face3.node1 or f.node3 == face3.node2 or f.node3 == face3.node3:
+                f.node3.add_voronoi_edge(edge)
+    return _voronoi_edges
+
+
+def calculate_voronoi_faces(nodes):
+    for n in nodes:
+        if n.get_voronoi_face() == None:
+            # Create a new Voronoi face object fo the node
+            n.set_voronoi_face(VoronoiFace())
+
+        # First we remove all the nodes on the face, this is because we're going to calculate them again
+        voronoi_face = n.get_voronoi_face()
+        voronoi_face.clear_nodes()
+
+        # Find all the nodes from the face from the edges on the node.
+        for e in n.get_voronoi_edges():
+            node_from = e.node_from
+            node_to = e.node_to
+            if not voronoi_face.contains(node_from):
+                voronoi_face.add_node(node_from)
+            if not voronoi_face.contains(node_to):
+                voronoi_face.add_node(node_to)
+
+        voronoi_face.gift_wrapping()

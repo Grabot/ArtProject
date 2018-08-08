@@ -63,7 +63,7 @@ class MainWindow(window.Window):
         self.test_selected_edge = False
         
         self.graph = Graph(nodes, half_edges, faces)
-        self.graph.calculate_voronoi_nodes()
+        self.graph.calculate_voronoi()
 
         self.check_face = self.graph.find_check_face(0, 0)
     
