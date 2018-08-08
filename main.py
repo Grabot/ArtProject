@@ -221,7 +221,18 @@ class MainWindow(window.Window):
                             polygonXY.append(v_node.x)
                             polygonXY.append(v_node.y)
                         draw(len(voronoi_face.get_nodes()), GL_POLYGON, ('v2f', polygonXY))
-            
+
+                # Draw the nodes with how you can give it a colour
+                glColor4f(1, 0, 0, 1.0)
+                for n in self.graph.nodes:
+                    nodeX = n.x
+                    nodeY = n.y
+                    draw(4, GL_QUADS, ('v2f', [
+                        nodeX - nodeSize, nodeY - nodeSize,
+                        nodeX - nodeSize, nodeY + nodeSize,
+                        nodeX + nodeSize, nodeY + nodeSize,
+                        nodeX + nodeSize, nodeY - nodeSize
+                    ]))
             glColor4f(0, 0, 0, 1.0)
             clock.tick()
             self.flip()

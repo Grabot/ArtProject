@@ -3,16 +3,12 @@ import objects.graph_logic as graph_logic
 
 
 def is_in_face(p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, node_x, node_y):
-    Area = 0.5 * (-p1_y * p2_x + p0_y * (-p1_x + p2_x) + p0_x * (p1_y - p2_y) + p1_x * p2_y)
+    area = 0.5 * (-p1_y * p2_x + p0_y * (-p1_x + p2_x) + p0_x * (p1_y - p2_y) + p1_x * p2_y)
 
-    s = 1 / (2 * Area) * (p0_y * p2_x - p0_x * p2_y + (p2_y - p0_y) * node_x + (p0_x - p2_x) * node_y)
-    t = 1 / (2 * Area) * (p0_x * p1_y - p0_y * p1_x + (p0_y - p1_y) * node_x + (p1_x - p0_x) * node_y)
+    s = 1 / (2 * area) * (p0_y * p2_x - p0_x * p2_y + (p2_y - p0_y) * node_x + (p0_x - p2_x) * node_y)
+    t = 1 / (2 * area) * (p0_x * p1_y - p0_y * p1_x + (p0_y - p1_y) * node_x + (p1_x - p0_x) * node_y)
 
     return s > 0 and t > 0 and 1 - s - t > 0
-
-
-def orientation(p1, p2, p3):
-    return (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)
 
 
 class Graph:
@@ -23,7 +19,6 @@ class Graph:
         # This happens because external code should use the randomized get_faces() method.
         self._faces = faces or []
         self._voronoi_nodes = []
-        self._voronoi_edges = []
         self._voronoi_faces = []
 
     def get_faces(self):
@@ -33,10 +28,6 @@ class Graph:
     def get_voronoi_nodes(self):
         shuffle(self._voronoi_nodes)
         return self._voronoi_nodes
-
-    def get_voronoi_edges(self):
-        shuffle(self._voronoi_edges)
-        return self._voronoi_edges
 
     def flip_edge(self, e):
         # First a simple check if we can flip the edge.
@@ -156,5 +147,5 @@ class Graph:
 
     def calculate_voronoi(self):
         self._voronoi_nodes = graph_logic.calculate_voronoi_nodes(self._faces)
-        self._voronoi_edges = graph_logic.calculate_voronoi_edges(self._faces, self.nodes)
+        graph_logic.calculate_voronoi_edges(self._faces, self.nodes)
         graph_logic.calculate_voronoi_faces(self.nodes)

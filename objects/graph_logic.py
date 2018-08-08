@@ -159,9 +159,9 @@ def line_from_slope(slope, point):
     return [slope, (slope * (-1 * point.x)) + point.y]
 
 
-def calculate_voronoi_nodes(_faces):
-    _voronoi_nodes = []
-    for f in _faces:
+def calculate_voronoi_nodes(faces):
+    voronoi_nodes = []
+    for f in faces:
         # We need to get the circumcenter of all the faces and that will be the nodes of the voronoi.
 
         mid1 = get_midpoint(f.node1, f.node2)
@@ -174,21 +174,20 @@ def calculate_voronoi_nodes(_faces):
         perpbi2 = line_from_slope(perp2, mid2)
         circumcent = get_intersection(perpbi1, perpbi2)
 
-        _voronoi_nodes.append(circumcent)
+        voronoi_nodes.append(circumcent)
         f.set_voronoi_node(circumcent)
-    return _voronoi_nodes
+    return voronoi_nodes
 
 
-def calculate_voronoi_edges(_faces, nodes):
+def calculate_voronoi_edges(faces, nodes):
     # first clear all the edges because we are going to re-calculate them
-    _voronoi_edges = []
-    for f in _faces:
+    for f in faces:
         f.clear_voronoi_edges()
 
     for n in nodes:
         n.clear_voronoi_edges()
 
-    for f in _faces:
+    for f in faces:
         # We will connect all voronoi nodes with the 3 adjacent voronoi nodes in the faces of it's corresponding face.
         face_edge1 = f.edge
         face_edge2 = face_edge1.next_edge
@@ -206,13 +205,10 @@ def calculate_voronoi_edges(_faces, nodes):
         if face_edge3.adjacent_edge is not None:
             face3 = face_edge3.adjacent_edge.face
 
-        voronoi_edges = []
         # We now have the current face and all it's adjacent faces.
         # We have already calculated the voronoi nodes for these faces, so we can connect them
         if face1 is not None:
             edge = Edge(f.get_voronoi_node(), face1.get_voronoi_node())
-            voronoi_edges.append(edge)
-            _voronoi_edges.append(edge)
 
             if f.node1 == face1.node1 or f.node1 == face1.node2 or f.node1 == face1.node3:
                 f.node1.add_voronoi_edge(edge)
@@ -225,8 +221,6 @@ def calculate_voronoi_edges(_faces, nodes):
 
         if face2 is not None:
             edge = Edge(f.get_voronoi_node(), face2.get_voronoi_node())
-            voronoi_edges.append(edge)
-            _voronoi_edges.append(edge)
 
             if f.node1 == face2.node1 or f.node1 == face2.node2 or f.node1 == face2.node3:
                 f.node1.add_voronoi_edge(edge)
@@ -239,8 +233,6 @@ def calculate_voronoi_edges(_faces, nodes):
 
         if face3 is not None:
             edge = Edge(f.get_voronoi_node(), face3.get_voronoi_node())
-            voronoi_edges.append(edge)
-            _voronoi_edges.append(edge)
 
             if f.node1 == face3.node1 or f.node1 == face3.node2 or f.node1 == face3.node3:
                 f.node1.add_voronoi_edge(edge)
@@ -250,7 +242,6 @@ def calculate_voronoi_edges(_faces, nodes):
 
             if f.node3 == face3.node1 or f.node3 == face3.node2 or f.node3 == face3.node3:
                 f.node3.add_voronoi_edge(edge)
-    return _voronoi_edges
 
 
 def calculate_voronoi_faces(nodes):
