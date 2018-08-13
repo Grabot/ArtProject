@@ -13,8 +13,9 @@ from objects.node import Node
 from voronoi_image import VoronoiImage
 from random import randint
 
+
 class MainWindow(window.Window):
-    def __init__(self, width, height, image_name, name):
+    def __init__(self, width, height, image_name, image, name):
         window.Window.__init__(self, width, height, name)
         self.show_edge = False
         self.width = width
@@ -61,28 +62,27 @@ class MainWindow(window.Window):
         self.amountOfNodes = 200
         self.show_test_face = False
         self.test_selected_edge = False
-        
-        self.graph = Graph(nodes, half_edges, faces)
+
+        self.graph = Graph(image.load(), width, height, nodes, half_edges, faces)
         self.graph.calculate_voronoi()
 
         self.check_face = self.graph.find_check_face(0, 0)
-    
+
     def main_loop(self):
         clock.set_fps_limit(30)
         nodeSize = 5
-        
+
         timer = 0
         while not self.has_exit:
             self.dispatch_events()
             self.clear()
-            
+
             timer += 1
 
-            if timer % 5 == 0:
-                x = randint(0, width)
-                y = randint(0, height)
-                self.addNode(x, y)
-
+            # if timer % 5 == 0:
+            #     x = randint(0, width)
+            #     y = randint(0, height)
+            #     self.addNode(x, y)
 
             if self.show_next_edge:
                 self.show_next_edge = False
@@ -91,19 +91,19 @@ class MainWindow(window.Window):
                 self.should_get_adjacent_edge = False
                 if self.the_edge_to_show.adjacent_edge is not None:
                     self.the_edge_to_show = self.the_edge_to_show.adjacent_edge
-            
+
             if self.flip_edge:
                 temp = self.graph.manually_flip_edge(self.the_edge_to_show)
                 if temp != None:
                     self.the_edge_to_show = temp
                 self.flip_edge = False
                 print("flipping edge :)")
-            
+
             # White, so reset the colour
             glColor4f(1, 1, 1, 1)
             gl.glLineWidth(1)
             self.draw()
-            
+
             gl.glEnable(gl.GL_BLEND)
             gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
@@ -160,11 +160,10 @@ class MainWindow(window.Window):
                         n2 = current_face.node2
                         n3 = current_face.node3
                         draw(3, GL_POLYGON,
-                                             ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
+                             ('v2f', [n1.x, n1.y, n2.x, n2.y, n3.x, n3.y]))
                     if self.test_selected_edge:
                         self.test_selected_edge = False
                         print("test the edge:", self.graph.test_edge(self.the_edge_to_show))
-
 
                 # draw the clicked face (for testing if the face finder is correct)
                 if self.show_test_face:
@@ -209,7 +208,6 @@ class MainWindow(window.Window):
                         draw(4, GL_LINES, (
                             'v2f', (0, 0, 0, height, nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y)))
 
-
                 # Draw the voronoi polygons (numberOfPoints, GL_POLYGON, ('v2f', [all x,y coordinates]))
                 for n in self.graph.nodes:
                     if n.get_voronoi_face() != None:
@@ -236,7 +234,7 @@ class MainWindow(window.Window):
             glColor4f(0, 0, 0, 1.0)
             clock.tick()
             self.flip()
-    
+
     def draw(self):
         self.voronoi_image.draw()
 
@@ -247,13 +245,13 @@ class MainWindow(window.Window):
     # Event handlers
     def on_mouse_motion(self, x, y, dx, dy):
         pass
-    
+
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         pass
-    
+
     def on_mouse_press(self, x, y, button, modifiers):
         pass
-    
+
     def on_mouse_release(self, x, y, button, modifiers):
         self.addNode(x, y)
 
@@ -294,9 +292,19 @@ class MainWindow(window.Window):
             self.show_voronoi_faces = False
         elif symbol == 113:  # q
             self.show_test_face = True
-        elif symbol == 49:   #1
+        elif symbol == 49:   # 1
             self.test_selected_edge = True
-    
+        elif symbol == 50:   # 2
+            print(self.graph.point_in_polygon_test(
+                [50, 340], [[100, 100],
+                            [0, 200],
+                            [0, 300],
+                            [100, 400],
+                            [200, 400],
+                            [300, 300],
+                            [300, 200],
+                            [200, 100]]))
+
     def on_key_release(self, symbol, modifiers):
         pass
 
@@ -308,6 +316,6 @@ if __name__ == "__main__":
     image_path = join(image_path, image_name)
     im = Image.open(image_path)
     (width, height) = im.size
-    
-    window = MainWindow(width, height, image_name, "Voronoi art project")
+
+    window = MainWindow(width, height, image_name, im, "Voronoi art project")
     window.main_loop()

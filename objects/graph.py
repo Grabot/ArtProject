@@ -1,5 +1,6 @@
 from random import shuffle
 import objects.graph_logic as graph_logic
+from objects.node import Node
 
 
 def is_in_face(p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, node_x, node_y):
@@ -12,7 +13,10 @@ def is_in_face(p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, node_x, node_y):
 
 
 class Graph:
-    def __init__(self, nodes=None, edges=None, faces=None):
+    def __init__(self, pixels, width, height, nodes=None, edges=None, faces=None):
+        self.pixels = pixels
+        self.width = width
+        self.height = height
         self.nodes = nodes or []
         self.edges = edges or []
         # Starting with _ is the Python way to mark this field as private.
@@ -145,7 +149,70 @@ class Graph:
                     return True
         return False
 
+    def point_in_polygon_test(self, point, polygon):
+        if self.inside_convex_polygon(point, polygon):
+            return True
+        else:
+            return False
+
     def calculate_voronoi(self):
         self._voronoi_nodes = graph_logic.calculate_voronoi_nodes(self._faces)
         graph_logic.calculate_voronoi_edges(self._faces, self.nodes)
         graph_logic.calculate_voronoi_faces(self.nodes)
+
+        # Now we only need to find the colour of the voronoi faces.
+        if len(self.nodes) > 3:
+            for n in self.nodes:
+                if abs(n.x) is not 9999999 or abs(n.y) is not 9999999:
+                    v_face = n.get_voronoi_face()
+                    v_face_nodes = v_face.get_nodes()
+                    total_red = 0
+                    total_green = 0
+                    total_blue = 0
+                    pixel_amount = 0
+                    for x in range(0, self.width):
+                        print("still here", x)
+                        for y in range(0, self.height):
+                            # Here we will loop over the entire picture and see which pixels are in the face.
+                            # Not the most efficient way, but whatever.
+                            pixel = self.pixels[x, y]
+                            if self.inside_convex_polygon(Node(x, y), v_face_nodes):
+                                pixel_amount += 1
+                                total_red += pixel[0]
+                                total_green += pixel[1]
+                                total_blue += pixel[2]
+                    if pixel_amount > 0:
+                        print("nice")
+                        face_colour = [total_red/pixel_amount, total_green/pixel_amount, total_blue/pixel_amount, 1.0]
+                        v_face.set_colour(face_colour)
+
+    def inside_convex_polygon(self, point, vertices):
+        previous_side = None
+        n_vertices = len(vertices)
+        for n in range(0, n_vertices):
+            a, b = vertices[n], vertices[(n+1) % n_vertices]
+            affine_segment = self.v_sub(b, a)
+            affine_point = self.v_sub(point, a)
+            current_side = self.get_side(affine_segment, affine_point)
+            if current_side is None:
+                return False #outside or over an edge
+            elif previous_side is None: #first segment
+                previous_side = current_side
+            elif previous_side != current_side:
+                return False
+        return True
+
+    def get_side(self, a, b):
+        x = self.x_product(a, b)
+        if x < 0:
+            return "LEFT"
+        elif x > 0:
+            return "RIGHT"
+        else:
+            return None
+
+    def v_sub(self, a, b):
+        return a.x-b.x, a.y-b.y
+
+    def x_product(self, a, b):
+        return a[0]*b[1]-a[1]*b[0]

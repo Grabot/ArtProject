@@ -58,3 +58,6 @@ class VoronoiFace:
 
         # We should now have found the points in correct order so we override the current node ordering with the new one
         self.nodes = final_points
+
+    def set_colour(self, colour):
+        self.colour = colour
