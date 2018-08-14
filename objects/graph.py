@@ -1,5 +1,6 @@
 from random import shuffle
 import objects.graph_logic as graph_logic
+import math
 from objects.node import Node
 
 
@@ -161,30 +162,24 @@ class Graph:
         graph_logic.calculate_voronoi_faces(self.nodes)
 
         # Now we only need to find the colour of the voronoi faces.
-        if len(self.nodes) > 3:
-            for n in self.nodes:
-                if abs(n.x) is not 9999999 or abs(n.y) is not 9999999:
-                    v_face = n.get_voronoi_face()
-                    v_face_nodes = v_face.get_nodes()
-                    total_red = 0
-                    total_green = 0
-                    total_blue = 0
-                    pixel_amount = 0
-                    for x in range(0, self.width):
-                        print("still here", x)
-                        for y in range(0, self.height):
-                            # Here we will loop over the entire picture and see which pixels are in the face.
-                            # Not the most efficient way, but whatever.
-                            pixel = self.pixels[x, y]
-                            if self.inside_convex_polygon(Node(x, y), v_face_nodes):
-                                pixel_amount += 1
-                                total_red += pixel[0]
-                                total_green += pixel[1]
-                                total_blue += pixel[2]
-                    if pixel_amount > 0:
-                        print("nice")
-                        face_colour = [total_red/pixel_amount, total_green/pixel_amount, total_blue/pixel_amount, 1.0]
-                        v_face.set_colour(face_colour)
+        for x in range(0, self.width):
+            for y in range(0, self.height):
+                smallest_distance_to_node = 999999999999
+                selected_node = None
+                for n in self.nodes:
+                    if abs(n.x) is not 9999999 or abs(n.y) is not 9999999:
+                        distance_to_node = self.distance(x, y, n.x, n.y)
+                        if self.distance(x, y, n.x, n.y) < smallest_distance_to_node:
+                            selected_node = n
+                            smallest_distance_to_node = distance_to_node
+                if selected_node is not None:
+                    pixel = self.pixels[x, y]
+                    selected_node.get_voronoi_face().add_pixel_value(pixel)
+        for n in self.nodes:
+            n.get_voronoi_face().calculate_colour()
+
+    def distance(self, x1, y1, x2, y2):
+        return math.hypot(x2 - x1, y2 - y1)
 
     def inside_convex_polygon(self, point, vertices):
         previous_side = None

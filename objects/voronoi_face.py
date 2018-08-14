@@ -8,6 +8,8 @@ def orientation(p1, p2, p3):
 class VoronoiFace:
     def __init__(self):
         self.nodes = []
+        self.colour_values = [0, 0, 0]
+        self.pixel_amount = 0
         self.colour = [randint(0, 255), randint(0, 255), randint(0, 255), 1.0]
 
     def add_node(self, node):
@@ -59,5 +61,17 @@ class VoronoiFace:
         # We should now have found the points in correct order so we override the current node ordering with the new one
         self.nodes = final_points
 
-    def set_colour(self, colour):
-        self.colour = colour
+    def add_pixel_value(self, pixel):
+        self.colour_values[0] += pixel[0]
+        self.colour_values[1] += pixel[1]
+        self.colour_values[2] += pixel[2]
+        self.pixel_amount += 1
+
+    def calculate_colour(self):
+        if self.pixel_amount is not 0:
+            self.colour = [self.colour_values[0]/self.pixel_amount,
+                           self.colour_values[1]/self.pixel_amount,
+                           self.colour_values[2]/self.pixel_amount,
+                           1.0]
+        self.colour_values = [0, 0, 0]
+        self.pixel_amount = 0
