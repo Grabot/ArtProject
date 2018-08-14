@@ -4,6 +4,7 @@ from objects.voronoi_face import VoronoiFace
 from objects.node import Node
 from objects.edge import Edge
 import numpy
+import math
 
 
 def add_node(face, node):
@@ -277,3 +278,26 @@ def is_valid_edge(A, B, C, D):
          [D.x, D.y, (pow(D.x, 2) + pow(D.y, 2)), 1]]
     det_result = numpy.linalg.det(M)
     return not det_result > 0
+
+
+def calculate_voronoi_colour(width, height, nodes, pixels):
+    for x in range(0, width):
+        for y in range(0, height):
+            smallest_distance_to_node = 999999999999
+            selected_node = None
+            for n in nodes:
+                if abs(n.x) is not 9999999 or abs(n.y) is not 9999999:
+                    distance_to_node = distance(x, y, n.x, n.y)
+                    if distance(x, y, n.x, n.y) < smallest_distance_to_node:
+                        selected_node = n
+                        smallest_distance_to_node = distance_to_node
+            if selected_node is not None:
+                pixel = pixels[x, y]
+                selected_node.get_voronoi_face().add_pixel_value(pixel)
+    for n in nodes:
+        n.get_voronoi_face().calculate_colour()
+
+
+def distance(x1, y1, x2, y2):
+    return math.hypot(x2 - x1, y2 - y1)
+

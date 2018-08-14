@@ -150,64 +150,11 @@ class Graph:
                     return True
         return False
 
-    def point_in_polygon_test(self, point, polygon):
-        if self.inside_convex_polygon(point, polygon):
-            return True
-        else:
-            return False
-
     def calculate_voronoi(self):
         self._voronoi_nodes = graph_logic.calculate_voronoi_nodes(self._faces)
         graph_logic.calculate_voronoi_edges(self._faces, self.nodes)
         graph_logic.calculate_voronoi_faces(self.nodes)
 
-        # Now we only need to find the colour of the voronoi faces.
-        for x in range(0, self.width):
-            for y in range(0, self.height):
-                smallest_distance_to_node = 999999999999
-                selected_node = None
-                for n in self.nodes:
-                    if abs(n.x) is not 9999999 or abs(n.y) is not 9999999:
-                        distance_to_node = self.distance(x, y, n.x, n.y)
-                        if self.distance(x, y, n.x, n.y) < smallest_distance_to_node:
-                            selected_node = n
-                            smallest_distance_to_node = distance_to_node
-                if selected_node is not None:
-                    pixel = self.pixels[x, y]
-                    selected_node.get_voronoi_face().add_pixel_value(pixel)
-        for n in self.nodes:
-            n.get_voronoi_face().calculate_colour()
+    def calculate_voronoi_colour(self):
+        graph_logic.calculate_voronoi_colour(self.width, self.height, self.nodes, self.pixels)
 
-    def distance(self, x1, y1, x2, y2):
-        return math.hypot(x2 - x1, y2 - y1)
-
-    def inside_convex_polygon(self, point, vertices):
-        previous_side = None
-        n_vertices = len(vertices)
-        for n in range(0, n_vertices):
-            a, b = vertices[n], vertices[(n+1) % n_vertices]
-            affine_segment = self.v_sub(b, a)
-            affine_point = self.v_sub(point, a)
-            current_side = self.get_side(affine_segment, affine_point)
-            if current_side is None:
-                return False #outside or over an edge
-            elif previous_side is None: #first segment
-                previous_side = current_side
-            elif previous_side != current_side:
-                return False
-        return True
-
-    def get_side(self, a, b):
-        x = self.x_product(a, b)
-        if x < 0:
-            return "LEFT"
-        elif x > 0:
-            return "RIGHT"
-        else:
-            return None
-
-    def v_sub(self, a, b):
-        return a.x-b.x, a.y-b.y
-
-    def x_product(self, a, b):
-        return a[0]*b[1]-a[1]*b[0]

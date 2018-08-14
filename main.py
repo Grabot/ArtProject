@@ -295,22 +295,14 @@ class MainWindow(window.Window):
         elif symbol == 49:   # 1
             self.test_selected_edge = True
         elif symbol == 50:   # 2
-            print(self.graph.point_in_polygon_test(
-                [50, 340], [[100, 100],
-                            [0, 200],
-                            [0, 300],
-                            [100, 400],
-                            [200, 400],
-                            [300, 300],
-                            [300, 200],
-                            [200, 100]]))
+            self.graph.calculate_voronoi_colour()
 
     def on_key_release(self, symbol, modifiers):
         pass
 
 
 if __name__ == "__main__":
-    image_name = "Oudegracht_Utrecht_2.png"
+    image_name = "Euclidean_Voronoi_diagram.svg.png"
     image_path = abspath(dirname(__file__))
     image_path = join(image_path, 'data')
     image_path = join(image_path, image_name)
