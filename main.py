@@ -302,7 +302,7 @@ class MainWindow(window.Window):
 
 
 if __name__ == "__main__":
-    image_name = "Euclidean_Voronoi_diagram.svg.png"
+    image_name = "square_division.png"
     image_path = abspath(dirname(__file__))
     image_path = join(image_path, 'data')
     image_path = join(image_path, image_name)

@@ -292,7 +292,7 @@ def calculate_voronoi_colour(width, height, nodes, pixels):
                         selected_node = n
                         smallest_distance_to_node = distance_to_node
             if selected_node is not None:
-                pixel = pixels[x, y]
+                pixel = pixels[x, abs(y-height)-1]
                 selected_node.get_voronoi_face().add_pixel_value(pixel)
     for n in nodes:
         n.get_voronoi_face().calculate_colour()
