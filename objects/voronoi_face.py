@@ -69,9 +69,9 @@ class VoronoiFace:
 
     def calculate_colour(self):
         if self.pixel_amount is not 0:
-            self.colour = [self.colour_values[0]/self.pixel_amount,
-                           self.colour_values[1]/self.pixel_amount,
-                           self.colour_values[2]/self.pixel_amount,
-                           1.0]
+            self.colour = [int(self.colour_values[0]/self.pixel_amount),
+                           int(self.colour_values[1]/self.pixel_amount),
+                           int(self.colour_values[2]/self.pixel_amount),
+                           1]
         self.colour_values = [0, 0, 0]
         self.pixel_amount = 0

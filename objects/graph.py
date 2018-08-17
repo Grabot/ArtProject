@@ -1,7 +1,5 @@
 from random import shuffle
 import objects.graph_logic as graph_logic
-import math
-from objects.node import Node
 
 
 def is_in_face(p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, node_x, node_y):

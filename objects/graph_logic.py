@@ -130,8 +130,11 @@ def flip_edge(edge):
 
 
 def get_slope(p1, p2):
-    slope = (p1.y - p2.y) / (p1.x - p2.x)
-    return slope
+    if (p1.x - p2.x) == 0:
+        # simple way to avoid a division by zero
+        return (p1.y - p2.y) / ((p1.x - p2.x)+0.00000001)
+    else:
+        return (p1.y - p2.y) / (p1.x - p2.x)
 
 
 def get_intersection(line1, line2):

@@ -5,14 +5,11 @@ from pyglet import clock
 from pyglet import window
 from pyglet.gl import glColor4f, gl, GL_POLYGON, GL_QUADS, GL_LINES
 from pyglet.graphics import draw
-import numpy
-import scipy.misc
 from objects.face import Face
 from objects.graph import Graph
 from objects.half_edge import HalfEdge
 from objects.node import Node
 from voronoi_image import VoronoiImage
-from random import randint
 
 
 class MainWindow(window.Window):
@@ -221,17 +218,6 @@ class MainWindow(window.Window):
                             polygonXY.append(v_node.y)
                         draw(len(voronoi_face.get_nodes()), GL_POLYGON, ('v2f', polygonXY))
 
-                # Draw the nodes with how you can give it a colour
-                glColor4f(1, 0, 0, 1.0)
-                for n in self.graph.nodes:
-                    nodeX = n.x
-                    nodeY = n.y
-                    draw(4, GL_QUADS, ('v2f', [
-                        nodeX - nodeSize, nodeY - nodeSize,
-                        nodeX - nodeSize, nodeY + nodeSize,
-                        nodeX + nodeSize, nodeY + nodeSize,
-                        nodeX + nodeSize, nodeY - nodeSize
-                    ]))
             glColor4f(0, 0, 0, 1.0)
             clock.tick()
             self.flip()
