@@ -298,6 +298,32 @@ def calculate_voronoi_colour(width, height, nodes, pixels):
         n.get_voronoi_face().calculate_colour()
 
 
+def create_image(width, height, nodes):
+    image_array = []
+
+    # first we fill the array with empty pixel values so we can replace them with the correct values.
+    for y in range(0, height):
+        image_array.append([])
+        for x in range(0, width):
+            image_array[y].append([0, 0, 0])
+
+    for x in range(0, width):
+        for y in range(0, height):
+            smallest_distance_to_node = 999999999999
+            selected_node = None
+            for n in nodes:
+                if abs(n.x) is not 9999999 or abs(n.y) is not 9999999:
+                    distance_to_node = distance(x, y, n.x, n.y)
+                    if distance(x, y, n.x, n.y) < smallest_distance_to_node:
+                        selected_node = n
+                        smallest_distance_to_node = distance_to_node
+            if selected_node is not None:
+                face = selected_node.get_voronoi_face()
+                pixel = [face.colour[0], face.colour[1], face.colour[2]]
+                image_array[abs(y-height)-1][x] = pixel
+    return image_array
+
+
 def distance(x1, y1, x2, y2):
     return math.hypot(x2 - x1, y2 - y1)
 

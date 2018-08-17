@@ -5,7 +5,8 @@ from pyglet import clock
 from pyglet import window
 from pyglet.gl import glColor4f, gl, GL_POLYGON, GL_QUADS, GL_LINES
 from pyglet.graphics import draw
-
+import numpy
+import scipy.misc
 from objects.face import Face
 from objects.graph import Graph
 from objects.half_edge import HalfEdge
@@ -265,44 +266,50 @@ class MainWindow(window.Window):
         if symbol == 97:
             # key press A
             pressedA = True
-        elif symbol == 65307:
+        elif symbol == 65307: # escape
             # escape key is pressed
             exit()
-        elif symbol == 98:   # b
+        elif symbol == 98:     # b
             self.show_edge = True
-        elif symbol == 118:  # v
+        elif symbol == 118:    # v
             self.show_edge = False
-        elif symbol == 110:  # n
+        elif symbol == 110:    # n
             self.show_next_edge = True
-        elif symbol == 102:  # f
+        elif symbol == 102:    # f
             self.show_face = True
-        elif symbol == 103:  # g
+        elif symbol == 103:    # g
             self.show_face = False
-        elif symbol == 116:  # t
+        elif symbol == 116:    # t
             self.should_get_adjacent_edge = True
-        elif symbol == 112:  # p
+        elif symbol == 112:    # p
             self.flip_edge = True
-        elif symbol == 122:  # z
+        elif symbol == 122:    # z
             self.show_all_faces = True
-        elif symbol == 120:  # x
+        elif symbol == 120:    # x
             self.show_all_faces = False
-        elif symbol == 119:  # w
+        elif symbol == 119:    # w
             self.show_voronoi_faces = True
-        elif symbol == 101:  # e
+        elif symbol == 101:    # e
             self.show_voronoi_faces = False
-        elif symbol == 113:  # q
+        elif symbol == 113:    # q
             self.show_test_face = True
-        elif symbol == 49:   # 1
+        elif symbol == 49:     # 1
             self.test_selected_edge = True
-        elif symbol == 50:   # 2
+        elif symbol == 50:     # 2
             self.graph.calculate_voronoi_colour()
+        elif symbol == 65293:  # enter
+            print("creating image")
+            rgbArray = self.graph.create_image()
+            newimage = Image.new('RGB', (len(rgbArray[0]), len(rgbArray)))  # type, size
+            newimage.putdata([tuple(p) for row in rgbArray for p in row])
+            newimage.save("voronoi_art.png")  # takes type from filename extension
 
     def on_key_release(self, symbol, modifiers):
         pass
 
 
 if __name__ == "__main__":
-    image_name = "square_division.png"
+    image_name = "parrots.png"
     image_path = abspath(dirname(__file__))
     image_path = join(image_path, 'data')
     image_path = join(image_path, image_name)

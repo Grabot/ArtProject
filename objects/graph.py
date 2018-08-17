@@ -158,3 +158,5 @@ class Graph:
     def calculate_voronoi_colour(self):
         graph_logic.calculate_voronoi_colour(self.width, self.height, self.nodes, self.pixels)
 
+    def create_image(self):
+        return graph_logic.create_image(self.width, self.height, self.nodes)
