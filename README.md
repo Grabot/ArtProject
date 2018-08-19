@@ -40,7 +40,7 @@ The user can continue the click on the image to place nodes at those positions, 
 
 determine average colour:
 
-When the user is happy with the voronoi tessalation and they want to generate the mosaiclike image of the picture loaded they can press '2' on the keyboard. Depending on the size of the image this can take a while, the progress is shown in the console. When it is done the avearge colour of the voronoi area's are drawn.
+When the user is happy with the voronoi tessalation and they want to generate the mosaiclike image of the picture loaded they can press '2' on the keyboard. Depending on the size of the image this can take a while, the progress is shown in the console. When it is done the average colour of the voronoi area's are drawn.
 If the user want a more detailed voronoi tessalation they can continue to add nodes and recalculate the image using the same method.
 
 saving the iamge:
