@@ -1,5 +1,5 @@
 from os.path import abspath, dirname, join
-
+import sys
 from PIL import Image
 from pyglet import clock
 from pyglet import window
@@ -13,12 +13,13 @@ from voronoi_image import VoronoiImage
 
 
 class MainWindow(window.Window):
-    def __init__(self, width, height, image_name, image, name):
+    def __init__(self, width, height, image_name, image, new_image_name, name):
         window.Window.__init__(self, width, height, name)
         self.show_edge = False
         self.width = width
         self.height = height
         self.voronoi_image = VoronoiImage(image_name)
+        self.new_image_name = new_image_name
 
         # Manually add 3 nodes with triangulation edges far outside the sight.
         node1 = Node(-9999999, -9999999)
@@ -286,21 +287,31 @@ class MainWindow(window.Window):
         elif symbol == 65293:  # enter
             print("creating image")
             rgbArray = self.graph.create_image()
-            newimage = Image.new('RGB', (len(rgbArray[0]), len(rgbArray)))  # type, size
+            newimage = Image.new('RGB', (len(rgbArray[0]), len(rgbArray)))
             newimage.putdata([tuple(p) for row in rgbArray for p in row])
-            newimage.save("voronoi_art.png")  # takes type from filename extension
+            newimage.save("examples/" + new_image_name + ".png")
 
     def on_key_release(self, symbol, modifiers):
         pass
 
 
 if __name__ == "__main__":
-    image_name = "parrots.png"
+
+    if len(sys.argv) > 1:
+        image_name = sys.argv[1]
+    else:
+        image_name = "parrots.png"
+
+    if len(sys.argv) > 2:
+        new_image_name = sys.argv[2]
+    else:
+        new_image_name = "voronoi_art"
+
     image_path = abspath(dirname(__file__))
     image_path = join(image_path, 'data')
     image_path = join(image_path, image_name)
     im = Image.open(image_path)
     (width, height) = im.size
 
-    window = MainWindow(width, height, image_name, im, "Voronoi art project")
+    window = MainWindow(width, height, image_name, im, new_image_name, "Voronoi art project")
     window.main_loop()

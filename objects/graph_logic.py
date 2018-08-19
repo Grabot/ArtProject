@@ -297,6 +297,10 @@ def calculate_voronoi_colour(width, height, nodes, pixels):
             if selected_node is not None:
                 pixel = pixels[x, abs(y-height)-1]
                 selected_node.get_voronoi_face().add_pixel_value(pixel)
+
+        if x % int((width/100)) == 0:
+            print("progress: " + str((x/width)*100)[0:4] + "%")
+
     for n in nodes:
         n.get_voronoi_face().calculate_colour()
 
@@ -324,6 +328,10 @@ def create_image(width, height, nodes):
                 face = selected_node.get_voronoi_face()
                 pixel = [face.colour[0], face.colour[1], face.colour[2]]
                 image_array[abs(y-height)-1][x] = pixel
+
+        if x % int((width/100)) == 0:
+            print("progress: " + str((x/width)*100)[0:4] + "%")
+
     return image_array
 
 
