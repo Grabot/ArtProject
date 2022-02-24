@@ -68,7 +68,6 @@ class MainWindow(window.Window):
         self.check_face = self.graph.find_check_face(0, 0)
 
     def main_loop(self):
-        clock.set_fps_limit(30)
         nodeSize = 5
 
         timer = 0

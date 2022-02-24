@@ -1,0 +1,3 @@
+numpy==1.22.2
+Pillow==9.0.1
+pyglet==1.5.21
